@@ -1,0 +1,8 @@
+# 3D Web Development Rules (R3F & Three.js)
+
+- Stack: React, TypeScript, Three.js, @react-three/fiber, @react-three/drei.
+- Always wrap 3D scenes in `<Canvas shadows camera={{ position: [0, 2, 5], fov: 50 }}>` inside a container with explicit width and height (e.g., `w-screen h-screen`).
+- Lighting: Never leave a scene unlit. Always include `<ambientLight intensity={0.5} />`, `<directionalLight position={[5, 5, 5]} castShadow />`, and `<Environment preset="city" />` from `@react-three/drei`.
+- Controls: Include `<OrbitControls makeDefault />` by default for scene navigation unless fixed camera is explicitly requested.
+- Performance: Use `useFrame` only for continuous animations. Never call `setState` inside `useFrame`—mutate refs directly.
+- Assets: Prefer `.glb` / `.gltf` models loaded via `useGLTF` from `@react-three/drei`.

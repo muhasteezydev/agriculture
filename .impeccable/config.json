@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "frontend/index.html"
+        ],
+        "createdAt": "2026-11-21T21:13:01.274Z",
+        "reason": "user confirmed: Botanical Folio world uses #F5EFE2 warm cream plate ground"
+      }
+    ]
+  }
+}

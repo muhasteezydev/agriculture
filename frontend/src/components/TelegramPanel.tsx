@@ -16,31 +16,31 @@ export const TelegramPanel: React.FC<Props> = ({
   onAction,
 }) => {
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-800 bg-[#0B141A]">
-      {/* Telegram header */}
-      <div className="flex items-center justify-between border-b border-slate-800/90 bg-[#17212B] px-3 py-2.5">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 text-slate-950 shadow">
-            <Bot className="h-4.5 w-4.5" />
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/15 bg-black/20">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-white/15 bg-white/5 px-3 py-2.5">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#142014]">
+            <Bot className="h-4 w-4" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-100">@AgroGuardKG_Bot</div>
-            <div className="text-[10px] text-sky-400">
+            <div className="text-xs font-medium text-white">@AgroGuardKG_Bot</div>
+            <div className="text-[10.5px] text-white/60">
               {realConnected
                 ? "Telegram API Live"
                 : lang === "ru"
-                ? "Интерактивное зеркало бота ($0)"
-                : "Боттун интерактивдүү күзгүсү ($0)"}
+                ? "Уведомления и команды"
+                : "Билдирүүлөр жана буйруктар"}
             </div>
           </div>
         </div>
-        <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-          {lang === "ru" ? "2-сторонний" : "2-тараптуу"}
+        <span className="rounded-full border border-[#B5F043]/40 bg-[#B5F043]/15 px-2 py-0.5 text-[10px] font-medium text-[#B5F043]">
+          {realConnected ? "Live" : lang === "ru" ? "Локально" : "Жергиликтүү"}
         </span>
       </div>
 
-      {/* Chat feed */}
-      <div className="flex max-h-[430px] flex-1 flex-col gap-2.5 overflow-y-auto p-3">
+      {/* Feed */}
+      <div className="flex max-h-[360px] flex-1 flex-col gap-2.5 overflow-y-auto p-3">
         {messages.map((m) => {
           const isFarmer = m.sender === "farmer";
           const title = lang === "ru" ? m.title_ru : m.title_kg;
@@ -52,39 +52,37 @@ export const TelegramPanel: React.FC<Props> = ({
               className={`flex flex-col ${isFarmer ? "items-end" : "items-start"}`}
             >
               <div
-                className={`max-w-[92%] rounded-2xl px-3 py-2 text-[11.5px] shadow ${
+                className={`max-w-[92%] rounded-2xl border px-3 py-2 text-xs ${
                   isFarmer
-                    ? "rounded-br-sm bg-emerald-700/80 text-emerald-50"
+                    ? "rounded-br-sm border-[#B5F043]/40 bg-[#B5F043]/20 text-white"
                     : m.severity === "critical"
-                    ? "rounded-bl-sm border border-rose-500/40 bg-[#182533] text-slate-100"
-                    : "rounded-bl-sm border border-slate-700/60 bg-[#182533] text-slate-100"
+                    ? "rounded-bl-sm border-[#FF6B6B]/45 bg-[#FF6B6B]/18 text-white"
+                    : "rounded-bl-sm border-white/15 bg-white/10 text-white"
                 }`}
               >
                 {m.image_b64 && (
                   <img
                     src={m.image_b64}
                     alt="Alert"
-                    className="mb-2 max-h-32 w-full rounded-lg border border-slate-700/60 object-cover"
+                    className="mb-2 max-h-28 w-full rounded-xl border border-white/15 object-cover"
                   />
                 )}
-                {title && (
-                  <div className="mb-0.5 text-xs font-bold text-white">{title}</div>
-                )}
-                <div className="whitespace-pre-line leading-relaxed text-slate-200">{text}</div>
-                <div className="mt-1 flex items-center justify-end gap-1 text-[9.5px] text-slate-400">
+                {title && <div className="mb-0.5 font-medium text-white">{title}</div>}
+                <div className="whitespace-pre-line leading-relaxed text-white/85">{text}</div>
+                <div className="font-mono-num mt-1 flex items-center justify-end gap-1 text-[10px] text-white/55">
                   <span>{m.ts}</span>
-                  {isFarmer && <CheckCheck className="h-3 w-3 text-emerald-300" />}
+                  {isFarmer && <CheckCheck className="h-3 w-3 text-[#B5F043]" />}
                 </div>
               </div>
 
-              {/* Interactive inline keyboard buttons */}
               {!isFarmer && m.buttons && m.buttons.length > 0 && (
-                <div className="mt-1 flex max-w-[92%] flex-wrap gap-1">
+                <div className="mt-1.5 flex max-w-[92%] flex-wrap gap-1">
                   {m.buttons.map((b) => (
                     <button
                       key={b.id}
+                      type="button"
                       onClick={() => onAction(b.id)}
-                      className="rounded-lg border border-sky-500/30 bg-[#1E2C3A] px-2.5 py-1 text-[10.5px] font-semibold text-sky-200 transition hover:bg-sky-600/30 active:scale-95"
+                      className="liquid-pill rounded-full px-2.5 py-1 text-[10.5px] font-medium text-white transition-all"
                     >
                       {lang === "ru" ? b.label_ru : b.label_kg}
                     </button>
@@ -96,34 +94,35 @@ export const TelegramPanel: React.FC<Props> = ({
         })}
       </div>
 
-      {/* Quick farmer command bar */}
-      <div className="border-t border-slate-800 bg-[#17212B] p-2">
-        <div className="mb-1 text-[10px] font-semibold text-slate-400">
-          {lang === "ru"
-            ? "Быстрые команды фермера (управляют 3D-теплицей):"
-            : "Фермердин тез буйруктары (3D-күнөскананы башкарат):"}
+      {/* Quick Commands */}
+      <div className="border-t border-white/15 bg-white/5 p-2.5">
+        <div className="mb-1.5 text-[10.5px] text-white/60">
+          {lang === "ru" ? "Быстрые команды:" : "Тез буйруктар:"}
         </div>
         <div className="grid grid-cols-3 gap-1.5">
           <button
+            type="button"
             onClick={() => onAction("sprinkler_toggle")}
-            className="flex items-center justify-center gap-1 rounded-lg bg-sky-500/15 px-2 py-1.5 text-[10.5px] font-semibold text-sky-200 hover:bg-sky-500/25"
+            className="liquid-pill flex items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-[11px] font-medium text-[#7DD3FC]"
           >
             <Send className="h-3 w-3" />
             {lang === "ru" ? "Полив" : "Сугаруу"}
           </button>
           <button
+            type="button"
             onClick={() => onAction("heater_toggle")}
-            className="flex items-center justify-center gap-1 rounded-lg bg-amber-500/15 px-2 py-1.5 text-[10.5px] font-semibold text-amber-200 hover:bg-amber-500/25"
+            className="liquid-pill flex items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-[11px] font-medium text-[#FBBF24]"
           >
             <Send className="h-3 w-3" />
             {lang === "ru" ? "Обогрев" : "Жылытуу"}
           </button>
           <button
+            type="button"
             onClick={() => onAction("auto_on")}
-            className="flex items-center justify-center gap-1 rounded-lg bg-emerald-500/15 px-2 py-1.5 text-[10.5px] font-semibold text-emerald-200 hover:bg-emerald-500/25"
+            className="liquid-pill flex items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-[11px] font-medium text-[#B5F043]"
           >
             <Send className="h-3 w-3" />
-            {lang === "ru" ? "Авто-AI" : "Авто-AI"}
+            {lang === "ru" ? "Авто" : "Авто"}
           </button>
         </div>
       </div>

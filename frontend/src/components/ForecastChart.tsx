@@ -11,7 +11,6 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
   const recent = history.slice(-10);
   const forecast = prediction.forecast_6h;
 
-  // Combined series: past readings + 6-hour ML forecast
   const combined = [
     ...recent.map((p) => ({
       label: p.label,
@@ -30,9 +29,9 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
   ];
 
   const W = 740;
-  const H = 178;
-  const padL = 42;
-  const padR = 16;
+  const H = 176;
+  const padL = 40;
+  const padR = 14;
   const padT = 16;
   const padB = 26;
   const plotW = W - padL - padR;
@@ -49,9 +48,7 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
     padL + (combined.length <= 1 ? 0 : (idx / (combined.length - 1)) * plotW);
   const yOf = (val: number) => padT + ((yMax - val) / span) * plotH;
 
-  const buildPath = (
-    points: { idx: number; val: number }[]
-  ): string => {
+  const buildPath = (points: { idx: number; val: number }[]): string => {
     if (points.length === 0) return "";
     return points
       .map((p, i) => `${i === 0 ? "M" : "L"} ${xOf(p.idx).toFixed(1)} ${yOf(p.val).toFixed(1)}`)
@@ -69,7 +66,6 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
   const futAir = buildPath(combined.slice(splitIdx).map((c, i) => ({ idx: splitIdx + i, val: c.air })));
   const futLeaf = buildPath(combined.slice(splitIdx).map((c, i) => ({ idx: splitIdx + i, val: c.leaf })));
 
-  // Y grid ticks (4-5 clean ticks)
   const step = span > 18 ? 6 : span > 10 ? 4 : 2;
   const ticks: number[] = [];
   for (let v = Math.ceil(yMin / step) * step; v <= yMax; v += step) {
@@ -81,60 +77,50 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800/90 bg-slate-900/75 p-3.5 backdrop-blur">
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-sky-400" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
-            {lang === "ru"
-              ? "Телеметрия & Edge-ML прогноз заморозков на 6 часов"
-              : "Телеметрия & 6 сааттык үшүк болжолу (Edge-ML)"}
-          </h3>
-          <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-medium text-slate-400">
-            {prediction.inference_ms.toFixed(2)} ms
-          </span>
-        </div>
+    <section className="liquid-glass rounded-[22px] px-5 py-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-white/15 pb-2.5">
+        <h2 className="text-sm font-medium tracking-tight text-white">
+          {lang === "ru"
+            ? "Прогноз температуры на 6 часов"
+            : "6 сааттык температура болжолу"}
+        </h2>
 
-        <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-300">
+        <div className="flex flex-wrap items-center gap-3.5 text-[11px] text-white/75">
           <span className="flex items-center gap-1.5">
-            <span className="h-0.5 w-3.5 rounded bg-sky-400" />
+            <span className="h-2 w-2 rounded-full bg-[#7DD3FC]" />
             {lang === "ru" ? "Воздух" : "Аба"}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-0.5 w-3.5 rounded bg-emerald-400" />
-            {lang === "ru" ? "Лист (ИК)" : "Жалбырак (ИК)"}
+            <span className="h-2 w-2 rounded-full bg-[#B5F043]" />
+            {lang === "ru" ? "Лист" : "Жалбырак"}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-0.5 w-3.5 rounded bg-violet-400 opacity-80" />
+            <span className="h-2 w-2 rounded-full bg-[#E5D9B6]" />
             {lang === "ru" ? "Точка росы" : "Шүүдүрүм"}
           </span>
-          <span className="flex items-center gap-1.5 text-rose-400">
-            <span className="h-0.5 w-3.5 border-t border-dashed border-rose-400" />
-            0°C
+          <span className="flex items-center gap-1.5 text-[#FF8787]">
+            <span className="h-0 w-3.5 border-t border-dashed border-[#FF8787]" />
+            {lang === "ru" ? "Заморозок 0°C" : "Үшүк 0°C"}
           </span>
         </div>
       </div>
 
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-[158px] w-full overflow-visible">
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-[152px] w-full overflow-visible">
         <defs>
-          <linearGradient id="frostZone" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#EF4444" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#EF4444" stopOpacity="0.04" />
-          </linearGradient>
-          <linearGradient id="forecastBg" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.09" />
-            <stop offset="100%" stopColor="#6366F1" stopOpacity="0.04" />
+          <linearGradient id="glassFrostZone" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FF6B6B" stopOpacity="0.24" />
+            <stop offset="100%" stopColor="#FF6B6B" stopOpacity="0.03" />
           </linearGradient>
         </defs>
 
-        {/* Forecast background band */}
+        {/* Forecast horizon highlight */}
         <rect
           x={nowX}
           y={padT}
           width={Math.max(0, W - padR - nowX)}
           height={plotH}
-          fill="url(#forecastBg)"
-          rx={4}
+          fill="rgba(255, 255, 255, 0.06)"
+          rx={8}
         />
 
         {/* Sub-zero freeze danger zone */}
@@ -144,11 +130,11 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
             y={Math.max(padT, zeroY)}
             width={plotW}
             height={Math.max(0, padT + plotH - Math.max(padT, zeroY))}
-            fill="url(#frostZone)"
+            fill="url(#glassFrostZone)"
           />
         )}
 
-        {/* Horizontal grid lines */}
+        {/* Horizontal glass grid lines */}
         {ticks.map((v) => {
           const y = yOf(v);
           const isZero = v === 0;
@@ -159,17 +145,18 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
                 y1={y}
                 x2={W - padR}
                 y2={y}
-                stroke={isZero ? "#FB7185" : "#1E293B"}
+                stroke={isZero ? "#FF7B7B" : "rgba(255, 255, 255, 0.12)"}
                 strokeWidth={isZero ? 1.3 : 1}
                 strokeDasharray={isZero ? "5 4" : undefined}
               />
               <text
-                x={padL - 7}
+                x={padL - 8}
                 y={y + 3.5}
                 textAnchor="end"
-                fontSize="10"
-                fill={isZero ? "#FB7185" : "#64748B"}
-                fontWeight={isZero ? "700" : "500"}
+                fontSize="10.5"
+                fontFamily="JetBrains Mono, monospace"
+                fill={isZero ? "#FF8787" : "rgba(255, 255, 255, 0.6)"}
+                fontWeight={isZero ? "600" : "400"}
               >
                 {v}°
               </text>
@@ -183,36 +170,36 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
           y1={padT}
           x2={nowX}
           y2={padT + plotH}
-          stroke="#475569"
-          strokeWidth={1.2}
+          stroke="rgba(255, 255, 255, 0.3)"
+          strokeWidth={1.1}
           strokeDasharray="3 3"
         />
         <text
-          x={nowX + 5}
-          y={padT + 11}
+          x={nowX + 6}
+          y={padT + 12}
           fontSize="9.5"
-          fontWeight="700"
-          fill="#94A3B8"
+          fontWeight="600"
+          fill="rgba(255, 255, 255, 0.72)"
         >
-          {lang === "ru" ? "ПРОГНОЗ +6Ч →" : "БОЛЖОЛ +6С →"}
+          {lang === "ru" ? "ПРОГНОЗ +6Ч" : "БОЛЖОЛ +6С"}
         </text>
 
         {/* Past curves */}
-        <path d={pastDew} fill="none" stroke="#A78BFA" strokeWidth="1.5" strokeOpacity="0.65" />
-        <path d={pastAir} fill="none" stroke="#38BDF8" strokeWidth="2.2" strokeLinecap="round" />
-        <path d={pastLeaf} fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" />
+        <path d={pastDew} fill="none" stroke="#E5D9B6" strokeWidth="1.4" strokeOpacity="0.7" />
+        <path d={pastAir} fill="none" stroke="#7DD3FC" strokeWidth="2.1" strokeLinecap="round" />
+        <path d={pastLeaf} fill="none" stroke="#B5F043" strokeWidth="2.6" strokeLinecap="round" />
 
         {/* Forecast dashed curves */}
-        <path d={futAir} fill="none" stroke="#38BDF8" strokeWidth="2" strokeDasharray="5 4" strokeOpacity="0.85" />
+        <path d={futAir} fill="none" stroke="#7DD3FC" strokeWidth="1.9" strokeDasharray="5 4" strokeOpacity="0.9" />
         <path
           d={futLeaf}
           fill="none"
-          stroke={prediction.frost_level === "critical" ? "#FB7185" : "#34D399"}
+          stroke={prediction.frost_level === "critical" ? "#FF6B6B" : "#B5F043"}
           strokeWidth="2.6"
           strokeDasharray="6 4"
         />
 
-        {/* Forecast endpoint dots */}
+        {/* Forecast dots */}
         {combined.slice(splitIdx + 1).map((c, idx) => {
           const i = splitIdx + 1 + idx;
           const isFreeze = c.leaf <= 0.5;
@@ -222,26 +209,26 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
               cx={xOf(i)}
               cy={yOf(c.leaf)}
               r={isFreeze ? 3.5 : 2.5}
-              fill={isFreeze ? "#FB7185" : "#34D399"}
-              stroke="#0F172A"
-              strokeWidth={1.2}
+              fill={isFreeze ? "#FF6B6B" : "#B5F043"}
+              stroke="#142215"
+              strokeWidth={1.3}
             />
           );
         })}
 
-        {/* Current live pulse dot */}
+        {/* Current live point */}
         {combined[splitIdx] && (
           <circle
             cx={nowX}
             cy={yOf(combined[splitIdx].leaf)}
             r={4.2}
-            fill="#10B981"
-            stroke="#ECFDF5"
+            fill={prediction.frost_level === "critical" ? "#FF6B6B" : "#B5F043"}
+            stroke="#FFFFFF"
             strokeWidth={1.6}
           />
         )}
 
-        {/* X axis labels */}
+        {/* X axis ticks */}
         {combined.map((c, i) => {
           const show =
             i === 0 ||
@@ -254,17 +241,18 @@ export const ForecastChart: React.FC<Props> = ({ history, prediction, lang }) =>
             <text
               key={i}
               x={xOf(i)}
-              y={H - 6}
+              y={H - 5}
               textAnchor="middle"
-              fontSize="9.5"
-              fill={c.isForecast ? "#93C5FD" : "#64748B"}
-              fontWeight={i === splitIdx ? "700" : "500"}
+              fontSize="10"
+              fontFamily="JetBrains Mono, monospace"
+              fill={c.isForecast ? "#FFFFFF" : "rgba(255, 255, 255, 0.58)"}
+              fontWeight={i === splitIdx ? "600" : "400"}
             >
               {c.label}
             </text>
           );
         })}
       </svg>
-    </div>
+    </section>
   );
 };

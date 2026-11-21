@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "name": "AgroGuard Edge",
+  "mode": "operate",
+  "tokens": {
+    "colors": {
+      "backdrop-forest": "#111E13",
+      "glass-surface": "rgba(255, 255, 255, 0.14)",
+      "glass-border": "rgba(255, 255, 255, 0.24)",
+      "ink-white": "#F8FAF7",
+      "accent-lime": "#B5F043",
+      "frost-coral": "#FF6B6B",
+      "mist-ice": "#7DD3FC",
+      "heater-amber": "#FBBF24"
+    },
+    "fonts": {
+      "display": "Onest, system-ui, -apple-system, sans-serif",
+      "body": "Onest, system-ui, -apple-system, sans-serif",
+      "mono": "JetBrains Mono, ui-monospace, monospace"
+    },
+    "radius": {
+      "md": "16px",
+      "lg": "22px",
+      "pill": "9999px"
+    }
+  }
+}

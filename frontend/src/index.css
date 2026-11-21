@@ -1,29 +1,136 @@
 @import "tailwindcss";
 
+:root {
+  --glass-bg-top: rgba(255, 255, 255, 0.14);
+  --glass-bg-mid: rgba(145, 175, 110, 0.09);
+  --glass-bg-bot: rgba(16, 28, 15, 0.44);
+  --glass-border: rgba(255, 255, 255, 0.24);
+  --glass-border-soft: rgba(255, 255, 255, 0.14);
+  --lime: #B5F043;
+  --frost: #FF6B6B;
+  --mist: #7DD3FC;
+  --warm: #FBBF24;
+}
+
 @layer base {
+  html,
   body {
-    font-family: "Inter", "Noto Sans", system-ui, -apple-system, sans-serif;
+    font-family: "Onest", system-ui, -apple-system, sans-serif;
+    background-color: #111E13;
+    color: #F8FAF7;
+    caret-color: var(--lime);
     overflow-x: hidden;
   }
 
-  /* Sleek custom range sliders */
+  ::selection {
+    background-color: rgba(181, 240, 67, 0.3);
+    color: #FFFFFF;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--lime);
+    outline-offset: 2px;
+  }
+
   input[type="range"] {
-    accent-color: #10b981;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 2px solid #2A4326;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    transition: transform 140ms ease;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.12);
   }
 }
 
-/* Custom subtle scrollbars */
+/* Full-bleed aerial agricultural landscape canvas */
+.agro-backdrop {
+  background-color: #132215;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(165, 212, 95, 0.22), transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(12, 24, 14, 0.72), transparent 60%),
+    linear-gradient(180deg, rgba(12, 22, 13, 0.42) 0%, rgba(14, 26, 15, 0.56) 100%),
+    url("/bg-fields.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* True Apple / Editorial Liquid Glass panel */
+.liquid-glass {
+  background: linear-gradient(
+    155deg,
+    var(--glass-bg-top) 0%,
+    var(--glass-bg-mid) 46%,
+    var(--glass-bg-bot) 100%
+  );
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 20px 44px -18px rgba(5, 14, 7, 0.6);
+}
+
+/* Subtle interactive glass pill/button */
+.liquid-pill {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.liquid-pill:hover {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.36);
+}
+
+.font-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.font-mono-num {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Frosted glass scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(15, 26, 16, 0.3);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(71, 85, 105, 0.7);
-  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.9);
+  background: rgba(255, 255, 255, 0.42);
 }
