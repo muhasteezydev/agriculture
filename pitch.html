@@ -733,7 +733,7 @@
     }
 
     .s9-cta {
-      shrink: 0;
+      flex-shrink: 0;
       background: var(--moss-bright);
       color: #142014;
       padding: 1.1cqw 1.9cqw;
@@ -742,6 +742,123 @@
       font-size: 1.25cqw;
       text-decoration: none;
       white-space: nowrap;
+    }
+
+    /* ==================== SLIDE: КОНКУРЕНТЫ ==================== */
+    .comp-wrap {
+      padding: 2.5% 4.5%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comp-title {
+      font-size: 6.4cqw;
+      margin-bottom: 2.2cqw;
+    }
+
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.25cqw;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(27, 27, 31, 0.12);
+    }
+
+    .comp-table th,
+    .comp-table td {
+      padding: 1.05cqw 1.2cqw;
+      text-align: left;
+      border-bottom: 1px solid rgba(27, 27, 31, 0.1);
+    }
+
+    .comp-table th {
+      font-weight: 700;
+      background: #F1F2F4;
+      color: var(--ink);
+    }
+
+    .comp-table th.us,
+    .comp-table td.us {
+      background: #EAF4E2;
+      color: #1B3610;
+      font-weight: 700;
+    }
+
+    .comp-table th.us {
+      background: var(--moss);
+      color: #fff;
+    }
+
+    /* ==================== SLIDE: КОМАНДА ==================== */
+    .team-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, #FAFAFA 0%, #FAFAFA 28%, rgba(16, 30, 16, 0.25) 31%, rgba(12, 24, 12, 0.72) 100%),
+        url("/bg-fields.jpg") center bottom/cover no-repeat;
+    }
+
+    .team-head {
+      position: relative;
+      z-index: 2;
+      padding: 1.6% 3.5% 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2cqw;
+    }
+
+    .team-head .mega-title {
+      font-size: 6.8cqw;
+    }
+
+    .team-head p {
+      font-size: 1.2cqw;
+      color: var(--muted);
+      max-width: 34%;
+    }
+
+    .team-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5cqw;
+      padding: 4.5% 3.5% 4%;
+    }
+
+    .team-card {
+      padding: 1.8cqw 1.5cqw;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7cqw;
+    }
+
+    .team-avatar {
+      width: 4.6cqw;
+      height: 4.6cqw;
+      border-radius: 50%;
+      background: var(--moss-bright);
+      color: #142014;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.5cqw;
+      font-weight: 700;
+      margin-bottom: 0.4cqw;
+    }
+
+    .team-card h3 {
+      font-size: 1.35cqw;
+      font-weight: 700;
+    }
+
+    .team-card p {
+      font-size: 1.05cqw;
+      line-height: 1.38;
+      opacity: 0.88;
     }
 
     /* Print / Save to PDF: 1 clean 16:9 slide per page */
@@ -764,7 +881,7 @@
   <!-- Presenter Toolbar -->
   <div class="toolbar">
     <button type="button" id="prevBtn">←</button>
-    <span class="counter" id="counter">01 / 09</span>
+    <span class="counter" id="counter">01 / 11</span>
     <button type="button" id="nextBtn">→</button>
     <button type="button" id="gridBtn" title="Сетка всех слайдов (G)">Сетка</button>
     <button type="button" class="primary" onclick="window.print()">PDF</button>
@@ -815,16 +932,16 @@
       <div class="ghost-num on-light">02</div>
     </section>
 
-    <!-- SLIDE 03: ЦЕЛЕВАЯ АУДИТОРИЯ -->
+    <!-- SLIDE 03: ЦЕЛЕВАЯ АУДИТОРИЯ (BEACHHEAD MARKET) -->
     <section class="slide">
       <div class="s3-bg"></div>
       <div class="s3-center">
         <div class="glass-card s3-card">
-          <h2>Целевая аудитория</h2>
+          <h2>Фокусный рынок</h2>
           <div class="s3-list">
-            <div>Фермеры и владельцы плёночных/поликарбонатных теплиц Чуйской долины и Оша</div>
-            <div>Садоводы Иссык-Кульской области (абрикос, яблоня, черешня, ягоды)</div>
-            <div>Агрономы и сельскохозяйственные кооперативы Кыргызстана и Центральной Азии</div>
+            <div><strong>Старт (Beachhead):</strong> плёночные и поликарбонатные теплицы Чуйской долины (томаты, клубника, огурцы), где уже есть 220V и полив</div>
+            <div><strong>Расширение:</strong> сады и теплицы Иссык-Куля и Оша (абрикос, ягоды, овощи)</div>
+            <div><strong>Масштаб:</strong> агрокооперативы и тепличные кластеры Казахстана и Узбекистана</div>
           </div>
         </div>
       </div>
@@ -884,58 +1001,108 @@
       <div class="ghost-num on-light">05</div>
     </section>
 
-    <!-- SLIDE 06: ТЕХНОЛОГИИ И ЖЕЛЕЗО (РЕСУРСЫ) -->
+    <!-- SLIDE 06: КОНКУРЕНТЫ -->
+    <section class="slide grid-bg-light">
+      <div class="comp-wrap">
+        <div class="mega-title comp-title">Конкуренты</div>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Критерий</th>
+              <th>Обычный термостат ($15)</th>
+              <th>Priva / Hoogendoorn ($5 000+)</th>
+              <th class="us">AgroGuard Edge ($99)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Датчик температуры листа (ИК)</td>
+              <td>Нет (только воздух)</td>
+              <td>Да (доп. опция)</td>
+              <td class="us">Да (MLX90614)</td>
+            </tr>
+            <tr>
+              <td>Прогноз заморозков на 6 часов</td>
+              <td>Нет (реакция постфактум)</td>
+              <td>Облачный</td>
+              <td class="us">Да (локальный Edge)</td>
+            </tr>
+            <tr>
+              <td>Офлайн диагностика болезней (CV)</td>
+              <td>Нет</td>
+              <td>Нет / платный модуль</td>
+              <td class="us">Да (на устройстве)</td>
+            </tr>
+            <tr>
+              <td>Работа без интернета</td>
+              <td>Да (без аналитики)</td>
+              <td>Ограниченно</td>
+              <td class="us">100% локально + Fail-Safe</td>
+            </tr>
+            <tr>
+              <td>Telegram-бот на RU / KG</td>
+              <td>Нет</td>
+              <td>Нет (сложный ПК-софт)</td>
+              <td class="us">Да (1 кнопка с телефона)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="ghost-num on-light">06</div>
+    </section>
+
+    <!-- SLIDE 07: ТЕХНОЛОГИИ И ЖЕЛЕЗО (ЧЕСТНЫЙ СТЕК) -->
     <section class="slide grid-bg-light">
       <div class="s6-wrap">
         <div class="mega-title s6-title">Технологии</div>
         <div class="s6-cols">
           <div class="s6-list">
-            <div><strong>Edge-AI прогноз заморозков:</strong> уравнение точки росы Магнуса + градиент охлаждения + аппаратный Fail-Safe.</div>
-            <div><strong>Локальный Edge-CV:</strong> анализ листьев и жёлтых клеевых ловушек на устройстве без облачных API.</div>
-            <div><strong>3D Digital Twin:</strong> интерактивная теплица на React Three Fiber + Three.js с живой SSE-телеметрией.</div>
-            <div><strong>Open-Meteo API + Telegram Bot:</strong> реальная погода Бишкека и двустороннее управление на RU/KG.</div>
+            <div><strong>MVP-ядро (работает сейчас):</strong> физико-логистическая модель точки росы Магнуса + кумулятивный прогноз 6ч + локальная HSV-сегментация листьев (&lt;100 мс, 0 облачных API).</div>
+            <div><strong>Пилот v1 (AI-апгрейд):</strong> замена на дообученные <strong>ONNX MobileNetV3</strong> (PlantVillage + фото КР) и <strong>LightGBM</strong> на реальных ночных логах.</div>
+            <div><strong>3D Digital Twin:</strong> интерактивная теплица на React Three Fiber + Three.js с живой телеметрией и автономным режимом.</div>
+            <div><strong>Связь и питание в поле:</strong> контроллер 5V подключается к существующим реле полива/обогрева 12V/220V + резервный канал GSM/LoRa.</div>
           </div>
           <div class="s6-hal">
             <h3>Архитектура HAL: готово к переносу на железо</h3>
             <p>
               ИИ-ядро отделено от драйвера датчиков: сегодня работает <strong>VirtualTwinDriver</strong>, а завтра он
-              меняется на реальную плату <strong>RPi Zero 2W / ESP32-S3 + SHT41 + ИК-датчик MLX90614 + реле 12V</strong>
+              меняется на реальную плату <strong>ESP32-S3 / RPi Zero 2W + SHT41 + ИК-датчик MLX90614 + реле</strong>
               без переписывания логики.
             </p>
           </div>
         </div>
       </div>
-      <div class="ghost-num on-light">06</div>
-    </section>
-
-    <!-- SLIDE 07: БЮДЖЕТ И ЭКОНОМИКА -->
-    <section class="slide grid-bg-light">
-      <div class="s7-left-art"></div>
-      <div class="mega-title s7-title">Бюджет</div>
-      <div class="s7-content">
-        <div class="s7-row">
-          <span>Контроллер (ESP32-S3 / RPi Zero 2W) + корпус IP65</span>
-          <strong>~$15</strong>
-        </div>
-        <div class="s7-row">
-          <span>Датчики (SHT41 воздух + MLX90614 ИК-лист)</span>
-          <strong>~$11</strong>
-        </div>
-        <div class="s7-row">
-          <span>Камера + блок реле 12V + солнечная панель</span>
-          <strong>~$9</strong>
-        </div>
-        <div class="s7-row">
-          <span>Бюджет MVP на хакатоне (100% Open-Source)</span>
-          <strong>$0</strong>
-        </div>
-        <div class="s7-badge">BOM ~$35 → Цена $99</div>
-        <div class="s7-note">Окупается за ОДНУ спасённую ночь весенних заморозков</div>
-      </div>
       <div class="ghost-num on-light">07</div>
     </section>
 
-    <!-- SLIDE 08: СРОКИ (ROADMAP) -->
+    <!-- SLIDE 08: БЮДЖЕТ И БИЗНЕС-МОДЕЛЬ -->
+    <section class="slide grid-bg-light">
+      <div class="s7-left-art"></div>
+      <div class="mega-title s7-title">Бизнес</div>
+      <div class="s7-content">
+        <div class="s7-row">
+          <span>Компоненты контроллера (ESP32-S3 + SHT41 + MLX90614 + реле)</span>
+          <strong>~$35 BOM</strong>
+        </div>
+        <div class="s7-row">
+          <span>Сборка, корпус IP65, блок питания и логистика в КР</span>
+          <strong>~$20</strong>
+        </div>
+        <div class="s7-row">
+          <span>Цена контроллера (подключается к поливу/обогреву фермера)</span>
+          <strong>$99</strong>
+        </div>
+        <div class="s7-row">
+          <span>SaaS-подписка (Telegram-алерты, аналитика сезона, обновления ИИ)</span>
+          <strong>$7 / мес</strong>
+        </div>
+        <div class="s7-badge">Канал: агрокооперативы и B2B-дилеры</div>
+        <div class="s7-note">Окупается фермеру за ОДНУ спасённую ночь заморозков ($1 000–$5 000)</div>
+      </div>
+      <div class="ghost-num on-light">08</div>
+    </section>
+
+    <!-- SLIDE 09: СРОКИ (ROADMAP) -->
     <section class="slide grid-bg-dark">
       <div class="vertical-rail" style="background: #292735;"><span>Сроки</span></div>
       <div class="s8-strip"></div>
@@ -943,23 +1110,55 @@
         <div class="s8-item">
           <div class="num">01</div>
           <h3>MVP и 3D Цифровой двойник — Готово</h3>
-          <p>Рабочий Edge-AI прогноз 6ч, офлайн CV-сканер болезней, 3D-теплица (R3F) и Telegram-бот на RU/KG.</p>
+          <p>Рабочий прогноз 6ч, локальный CV-сканер болезней, 3D-теплица (R3F), гистерезис реле и Telegram-бот на RU/KG.</p>
         </div>
         <div class="s8-item">
           <div class="num">02</div>
-          <h3>Полевой прототип — 1–2 месяца</h3>
-          <p>Сборка физического узла на ESP32-S3 / RPi Zero 2W + MLX90614 и подключение драйвера через HAL.</p>
+          <h3>Железный прототип и CustDev — 1–2 месяца</h3>
+          <p>Сборка узла ESP32-S3 + MLX90614 через HAL, интервью с 20+ фермерами Чуйской долины и сбор локального датасета листьев.</p>
         </div>
         <div class="s8-item">
           <div class="num">03</div>
-          <h3>Пилот в теплицах КР — Весна 2027</h3>
-          <p>Установка в 5 хозяйствах Чуйской долины и Иссык-Куля, калибровка моделей на реальных ночных заморозках.</p>
+          <h3>Пилот в 5 теплицах КР — Весна 2027</h3>
+          <p>Полевые испытания в весенние заморозки, дообучение ONNX/LightGBM и первые платные подключения через кооперативы.</p>
         </div>
       </div>
-      <div class="ghost-num on-dark">08</div>
+      <div class="ghost-num on-dark">09</div>
     </section>
 
-    <!-- SLIDE 09: ОЖИДАЕМЫЕ РЕЗУЛЬТАТЫ -->
+    <!-- SLIDE 10: КОМАНДА -->
+    <section class="slide">
+      <div class="team-bg"></div>
+      <div class="team-head">
+        <div class="mega-title">Команда</div>
+        <p>Кросс-функциональная команда для запуска железа, ИИ и пилота в теплицах КР</p>
+      </div>
+      <div class="team-grid">
+        <div class="glass-card team-card">
+          <div class="team-avatar">AI</div>
+          <h3>AI & Backend</h3>
+          <p>Физика заморозков, Edge-CV пайплайн, архитектура HAL и Telegram-бот.</p>
+        </div>
+        <div class="glass-card team-card">
+          <div class="team-avatar">3D</div>
+          <h3>3D & Frontend</h3>
+          <p>Интерактивный 3D Digital Twin на React Three Fiber и UX для фермеров.</p>
+        </div>
+        <div class="glass-card team-card">
+          <div class="team-avatar">HW</div>
+          <h3>Embedded & IoT</h3>
+          <p>Интеграция ESP32-S3 / RPi, I2C-датчиков SHT41/MLX90614 и силовых реле.</p>
+        </div>
+        <div class="glass-card team-card">
+          <div class="team-avatar">AG</div>
+          <h3>Агрономия & GTM</h3>
+          <p>Полевые пилоты в Чуйской долине, партнёрства с кооперативами и продажи.</p>
+        </div>
+      </div>
+      <div class="ghost-num on-dark">10</div>
+    </section>
+
+    <!-- SLIDE 11: ОЖИДАЕМЫЕ РЕЗУЛЬТАТЫ -->
     <section class="slide">
       <div class="s9-bg"></div>
       <div class="mega-title s9-title">Ожидаемые<br />результаты</div>
@@ -967,11 +1166,11 @@
         <div class="s9-points">
           <div><strong>−20–35% потерь урожая</strong> за счёт раннего прогноза заморозков и болезней</div>
           <div><strong>100% автономность:</strong> защита срабатывает даже при отсутствии интернета в селе</div>
-          <div><strong>Масштабируемость:</strong> единое решение за $99 для теплиц и садов всего Кыргызстана и ЦА</div>
+          <div><strong>Масштабируемость:</strong> контроллер за $99 + $7/мес для теплиц всего Кыргызстана и ЦА</div>
         </div>
         <a href="/" class="s9-cta">Открыть живое 3D-демо →</a>
       </div>
-      <div class="ghost-num on-dark">09</div>
+      <div class="ghost-num on-dark">11</div>
     </section>
   </main>
 

@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useProgress } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { Eye, Cpu, ShieldAlert } from "lucide-react";
 import { ActuatorState, CVResult, FrostPrediction, Lang, SensorReading } from "../types";
@@ -76,6 +76,7 @@ export const Greenhouse3D: React.FC<Props> = ({
 }) => {
   const [preset, setPreset] = useState<CameraPreset>("hero");
   const [presetVersion, setPresetVersion] = useState(0);
+  const { active: modelsLoading, progress: loadPct } = useProgress();
 
   const selectPreset = (p: CameraPreset) => {
     setPreset(p);
@@ -128,6 +129,19 @@ export const Greenhouse3D: React.FC<Props> = ({
           />
         </group>
       </Canvas>
+
+      {/* Smooth 3D Model Loading Indicator (for slow Wi-Fi / Vercel first visit) */}
+      {modelsLoading && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#121D14]/45 backdrop-blur-sm">
+          <div className="liquid-pill flex items-center gap-2.5 rounded-full px-4 py-2 text-xs font-medium text-white">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-[#B5F043]" />
+            <span>
+              {lang === "ru" ? "Загрузка 3D-теплицы" : "3D-күнөскана жүктөлүүдө"}{" "}
+              <strong className="font-mono-num">{Math.round(loadPct)}%</strong>
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Top-Right Glass Simulation Clock & Fail-Safe Pill */}
       <div className="pointer-events-none absolute top-3.5 right-3.5 flex flex-col items-end gap-1.5">

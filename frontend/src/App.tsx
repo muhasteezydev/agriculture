@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Sprout,
   Play,
@@ -24,6 +24,7 @@ import { Greenhouse3D } from "./components/Greenhouse3D";
 import { ForecastChart } from "./components/ForecastChart";
 import { DiseaseScanner } from "./components/DiseaseScanner";
 import { TelegramPanel } from "./components/TelegramPanel";
+import { LOCAL_SCENARIOS, LocalSimEngine } from "./lib/localSim";
 import { AppSnapshot, Lang, SampleMeta, ScenarioMeta } from "./types";
 
 type TabId = "climate" | "cv" | "telegram";
@@ -35,7 +36,7 @@ export function App() {
   const [lang, setLang] = useState<Lang>("ru");
   const [activeTab, setActiveTab] = useState<TabId>("climate");
   const [simOpen, setSimOpen] = useState(false);
-  const [connError, setConnError] = useState(false);
+  const localEngineRef = useRef<LocalSimEngine | null>(null);
 
   useEffect(() => {
     document.title =
@@ -45,42 +46,89 @@ export function App() {
   }, [lang]);
 
   useEffect(() => {
-    fetch("/api/scenarios")
-      .then((r) => r.json())
-      .then(setScenarios)
-      .catch(() => {});
+    let es: EventSource | null = null;
+    let localTimer: number | null = null;
+    let disposed = false;
 
-    fetch("/api/samples")
-      .then((r) => r.json())
-      .then(setSamples)
-      .catch(() => {});
+    const startLocalFallback = () => {
+      if (disposed || localEngineRef.current) return;
+      const engine = new LocalSimEngine();
+      localEngineRef.current = engine;
+      setScenarios(LOCAL_SCENARIOS);
+      setSamples(engine.getSamples());
+      setSnapshot(engine.getSnapshot());
+      localTimer = window.setInterval(() => {
+        engine.step();
+        setSnapshot(engine.getSnapshot());
+      }, 1000);
+    };
 
-    fetch("/api/state")
-      .then((r) => r.json())
-      .then((data) => {
-        setSnapshot(data);
-        setConnError(false);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 1600);
+
+    fetch("/api/state", { signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error("Backend unavailable");
+        return r.json();
       })
-      .catch(() => setConnError(true));
+      .then((data) => {
+        window.clearTimeout(timeout);
+        if (disposed) return;
+        setSnapshot(data);
 
-    const es = new EventSource("/api/stream");
-    es.onmessage = (ev) => {
-      try {
-        const parsed: AppSnapshot = JSON.parse(ev.data);
-        setSnapshot(parsed);
-        setConnError(false);
-      } catch {
-        // ignore keepalive parse
-      }
-    };
-    es.onerror = () => {
-      setConnError(true);
-    };
+        fetch("/api/scenarios")
+          .then((r) => r.json())
+          .then(setScenarios)
+          .catch(() => setScenarios(LOCAL_SCENARIOS));
 
-    return () => es.close();
+        fetch("/api/samples")
+          .then((r) => r.json())
+          .then(setSamples)
+          .catch(() => {});
+
+        es = new EventSource("/api/stream");
+        es.onmessage = (ev) => {
+          try {
+            const parsed: AppSnapshot = JSON.parse(ev.data);
+            setSnapshot(parsed);
+          } catch {
+            // ignore keepalive parse
+          }
+        };
+      })
+      .catch(() => {
+        window.clearTimeout(timeout);
+        startLocalFallback();
+      });
+
+    return () => {
+      disposed = true;
+      window.clearTimeout(timeout);
+      controller.abort();
+      es?.close();
+      if (localTimer !== null) window.clearInterval(localTimer);
+    };
   }, []);
 
   const postJson = async (url: string, body: Record<string, unknown>) => {
+    const engine = localEngineRef.current;
+    if (engine) {
+      if (url === "/api/scenario") {
+        await engine.loadScenario(String(body.scenario_id ?? "chuy_april_frost"), Boolean(body.fast_forward));
+      } else if (url === "/api/sensors") {
+        engine.setParams(body);
+      } else if (url === "/api/actuators") {
+        engine.setActuators(body);
+      } else if (url === "/api/cv/analyze") {
+        engine.analyzeSample(String(body.sample_id ?? "late_blight"), typeof body.image_base64 === "string" ? body.image_base64 : undefined);
+      } else if (url === "/api/telegram/action") {
+        engine.telegramAction(String(body.command ?? ""));
+      }
+      const next = engine.getSnapshot();
+      setSnapshot(next);
+      return next;
+    }
+
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -142,11 +190,9 @@ export function App() {
     return (
       <div className="agro-backdrop flex min-h-screen flex-col items-center justify-center px-4 text-white">
         <div className="liquid-glass flex flex-col items-center rounded-[22px] px-8 py-7">
-          <Sprout className="mb-3 h-8 w-8 text-[#B5F043]" />
+          <Sprout className="mb-3 h-8 w-8 text-[#B5F043]" aria-hidden="true" />
           <p className="text-sm font-medium">
-            {connError
-              ? "Нет связи с сервером AgroGuard Edge (python3 backend/server.py)"
-              : "Подключение к умной теплице AgroGuard Edge..."}
+            Загрузка умной теплицы AgroGuard Edge...
           </p>
         </div>
       </div>
