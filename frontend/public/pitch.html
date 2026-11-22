@@ -149,17 +149,16 @@
     }
 
     /* Native Fullscreen Presentation Mode (Keynote / Projector style) */
-    :fullscreen .deck,
-    :-webkit-full-screen .deck {
+    body.is-fullscreen .deck {
       padding: 0;
       background: #0d0d10;
     }
 
-    :fullscreen .slide,
-    :-webkit-full-screen .slide {
-      width: min(100vw, calc(100vh * 16 / 9));
-      height: min(100vh, calc(100vw * 9 / 16));
+    body.is-fullscreen .slide {
+      width: 100vw;
+      height: 100vh;
       max-width: none;
+      aspect-ratio: auto;
       box-shadow: none;
     }
 
@@ -1241,6 +1240,7 @@
 
     document.addEventListener("fullscreenchange", () => {
       const isFs = Boolean(document.fullscreenElement);
+      document.body.classList.toggle("is-fullscreen", isFs);
       fsBtn.textContent = isFs ? "Выход" : "Полный экран";
       if (isFs) {
         resetFsIdle();
