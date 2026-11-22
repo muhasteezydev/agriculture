@@ -133,6 +133,21 @@
       transform: translateY(-2px);
     }
 
+    body.export-mode .toolbar {
+      display: none !important;
+    }
+
+    body.export-mode .deck {
+      padding: 0;
+    }
+
+    body.export-mode .slide {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      box-shadow: none;
+    }
+
     /* Architectural subtle grid overlay matching GlowGarden reference */
     .grid-bg-light {
       background-color: var(--white);
@@ -965,6 +980,10 @@
     const counter = document.getElementById("counter");
     const gridBtn = document.getElementById("gridBtn");
     let current = 0;
+
+    if (new URLSearchParams(window.location.search).get("export") === "1") {
+      document.body.classList.add("export-mode");
+    }
 
     function show(idx) {
       current = (idx + slides.length) % slides.length;
