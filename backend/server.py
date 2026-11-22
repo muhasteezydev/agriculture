@@ -81,9 +81,16 @@ class AgroGuardController:
 
     def _evaluate_and_act(self, initial: bool = False) -> None:
         sensors = self.driver.read_sensors()
+        # Predict frost risk against ambient (unprotected) leaf temperature so activating
+        # the heater/sprinkler doesn't blind the predictor and cause ON/OFF flapping!
+        ambient_leaf = (
+            self.driver.get_unprotected_leaf_temp()
+            if hasattr(self.driver, "get_unprotected_leaf_temp")
+            else sensors.leaf_temp_c
+        )
         pred = self.frost_ai.predict(
             air_temp_c=sensors.air_temp_c,
-            leaf_temp_c=sensors.leaf_temp_c,
+            leaf_temp_c=ambient_leaf,
             humidity_pct=sensors.humidity_pct,
             pressure_hpa=sensors.pressure_hpa,
             pressure_trend_hpa_h=sensors.pressure_trend_hpa_h,
@@ -92,24 +99,30 @@ class AgroGuardController:
         )
         act = self.driver.get_state()
 
-        # Autonomous Edge-AI decision + Hardware Fail-Safe
+        # Autonomous Edge-AI decision + Hardware Fail-Safe with hysteresis (no bang-bang flapping)
         if act.auto_mode or pred["failsafe_triggered"]:
             rec = pred["recommended_actions"]
-            new_sprinkler = rec["sprinkler"]
-            new_heater = rec["heater"]
-            new_vent = rec["vent"]
+            new_sprinkler = rec["sprinkler"] or (act.sprinkler_on and pred["frost_risk_pct"] >= 45)
+            new_heater = rec["heater"] or (act.heater_on and pred["frost_risk_pct"] >= 45)
+            new_vent = rec["vent"] and not new_heater
 
             if pred["failsafe_triggered"]:
-                reason_ru = f"FAIL-SAFE: лист {sensors.leaf_temp_c:.1f}°C — принудительная защита!"
-                reason_kg = f"FAIL-SAFE: жалбырак {sensors.leaf_temp_c:.1f}°C — шашылыш коргоо!"
+                reason_ru = f"Аварийная защита: лист {sensors.leaf_temp_c:.1f}°C — полив и обогрев включены"
+                reason_kg = f"Авариялык коргоо: жалбырак {sensors.leaf_temp_c:.1f}°C — сугаруу жана жылытуу күйүк"
             elif new_sprinkler or new_heater:
-                reason_ru = f"Edge-AI: риск заморозка {pred['frost_risk_pct']}% (прогноз {pred['min_predicted_leaf_c']}°C)"
-                reason_kg = f"Edge-AI: үшүк коркунучу {pred['frost_risk_pct']}% (болжол {pred['min_predicted_leaf_c']}°C)"
+                active_ru = " и ".join(
+                    x for x in ["полив" if new_sprinkler else "", "обогрев" if new_heater else ""] if x
+                )
+                active_kg = " жана ".join(
+                    x for x in ["сугаруу" if new_sprinkler else "", "жылытуу" if new_heater else ""] if x
+                )
+                reason_ru = f"Защита работает: включён {active_ru} (риск {pred['frost_risk_pct']}%, без защиты {pred['min_predicted_leaf_c']:.1f}°C)"
+                reason_kg = f"Коргоо иштөөдө: {active_kg} күйүк (коркунуч {pred['frost_risk_pct']}%, коргоосуз {pred['min_predicted_leaf_c']:.1f}°C)"
             elif new_vent:
-                reason_ru = f"Edge-AI: влажность {sensors.humidity_pct:.0f}% — проветривание от грибка"
-                reason_kg = f"Edge-AI: нымдуулук {sensors.humidity_pct:.0f}% — козу карындан желдетүү"
+                reason_ru = f"Защита от грибка: открыты окна (влажность {sensors.humidity_pct:.0f}%)"
+                reason_kg = f"Козу карындан коргоо: терезелер ачык (нымдуулук {sensors.humidity_pct:.0f}%)"
             else:
-                reason_ru = "Микроклимат в норме — режим дежурного мониторинга"
+                reason_ru = "Микроклимат в норме — дежурный мониторинг"
                 reason_kg = "Микроклимат нормада — мониторинг режими"
 
             changed = (
@@ -272,15 +285,22 @@ class AgroGuardController:
 
     def get_snapshot(self) -> dict:
         sensors = self.driver.read_sensors()
+        ambient_leaf = (
+            self.driver.get_unprotected_leaf_temp()
+            if hasattr(self.driver, "get_unprotected_leaf_temp")
+            else sensors.leaf_temp_c
+        )
         pred = self.frost_ai.predict(
             air_temp_c=sensors.air_temp_c,
-            leaf_temp_c=sensors.leaf_temp_c,
+            leaf_temp_c=ambient_leaf,
             humidity_pct=sensors.humidity_pct,
             pressure_hpa=sensors.pressure_hpa,
             pressure_trend_hpa_h=sensors.pressure_trend_hpa_h,
             cooling_rate_c_h=sensors.cooling_rate_c_h,
             sim_hour=sensors.sim_hour,
         )
+        # Keep displayed leaf_air_delta_c matched to actual measured leaf vs air
+        pred["leaf_air_delta_c"] = round(sensors.leaf_temp_c - sensors.air_temp_c, 2)
         return {
             "sensors": sensors.to_dict(),
             "prediction": pred,

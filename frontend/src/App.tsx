@@ -38,6 +38,13 @@ export function App() {
   const [connError, setConnError] = useState(false);
 
   useEffect(() => {
+    document.title =
+      lang === "ru"
+        ? "AgroGuard Edge — Умная теплица"
+        : "AgroGuard Edge — Акылдуу күнөскана";
+  }, [lang]);
+
+  useEffect(() => {
     fetch("/api/scenarios")
       .then((r) => r.json())
       .then(setScenarios)
@@ -165,7 +172,7 @@ export function App() {
       <header className="mx-auto flex w-full max-w-[1540px] flex-wrap items-center justify-between gap-3 px-4 pt-3.5 pb-2 lg:px-6">
         {/* Left Crisp White Brand Pill (matching reference) */}
         <div className="flex items-center gap-2 rounded-2xl bg-white px-3.5 py-2 text-[#142014] shadow-lg">
-          <Sprout className="h-4 w-4 text-[#2E6F2B]" />
+          <Sprout className="h-4 w-4 text-[#2E6F2B]" aria-hidden="true" />
           <span className="text-xs font-bold tracking-wide uppercase">AgroGuard Edge</span>
         </div>
 
@@ -186,7 +193,7 @@ export function App() {
               <select
                 value={sensors.scenario}
                 onChange={(e) => handleScenario(e.target.value, false)}
-                className="liquid-pill cursor-pointer rounded-2xl px-3.5 py-2 text-xs font-medium text-white [&>option]:bg-[#182619] [&>option]:text-white"
+                className="liquid-pill min-h-[38px] cursor-pointer rounded-2xl px-3.5 py-2 text-xs font-medium text-white [&>option]:bg-[#182619] [&>option]:text-white"
               >
                 {scenarios.map((sc) => (
                   <option key={sc.id} value={sc.id}>
@@ -200,18 +207,19 @@ export function App() {
           <button
             type="button"
             onClick={handlePitchDemoRun}
-            className="flex items-center gap-1.5 rounded-2xl bg-white px-4 py-2 text-xs font-semibold text-[#142014] shadow-lg transition-all hover:bg-[#B5F043]"
+            className="flex min-h-[38px] items-center gap-1.5 rounded-2xl bg-white px-4 py-2 text-xs font-semibold text-[#142014] shadow-lg transition-colors hover:bg-[#B5F043]"
           >
-            <Play className="h-3.5 w-3.5 fill-current" />
+            <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
             {lang === "ru" ? "Симуляция заморозка" : "Үшүк симуляциясы"}
           </button>
 
           <button
             type="button"
             onClick={() => setLang(lang === "ru" ? "kg" : "ru")}
-            className="liquid-pill flex items-center gap-1.5 rounded-2xl px-3 py-2 font-mono-num text-xs font-medium text-white"
+            aria-label={lang === "ru" ? "Переключить язык на кыргызский" : "Тилди орусчага которуу"}
+            className="liquid-pill flex min-h-[38px] items-center gap-1.5 rounded-2xl px-3 py-2 font-mono-num text-xs font-medium text-white"
           >
-            <Globe className="h-3.5 w-3.5 text-white/75" />
+            <Globe className="h-3.5 w-3.5 text-white/80" aria-hidden="true" />
             {lang === "ru" ? "RU" : "KG"}
           </button>
         </div>
@@ -220,13 +228,13 @@ export function App() {
       {/* 3-Column Bento Liquid Glass Workspace (Left Telemetry | Center 3D + Chart | Right Controls) */}
       <main className="mx-auto grid w-full max-w-[1540px] flex-1 grid-cols-1 gap-4 px-4 pt-2 pb-5 lg:grid-cols-12 lg:px-6">
         {/* LEFT COLUMN (3 cols): Reference-style Large Light-Weight Metrics Glass Panel */}
-        <section className="flex flex-col gap-4 lg:col-span-3">
-          <div className="liquid-glass flex flex-1 flex-col rounded-[22px] p-5">
+        <section className="flex flex-col gap-4 lg:col-span-3 lg:self-start">
+          <div className="liquid-glass flex flex-col rounded-[22px] p-5">
             <div className="border-b border-white/15 pb-3 text-sm font-medium text-white/90">
               {lang === "ru" ? "Показатели теплицы" : "Күнөскана көрсөткүчтөрү"}
             </div>
 
-            <div className="flex flex-1 flex-col justify-between divide-y divide-white/12">
+            <div className="flex flex-1 flex-col justify-between divide-y divide-white/14">
               {/* Air Temp */}
               <div className="py-4">
                 <div className="flex items-baseline gap-2">
@@ -234,11 +242,11 @@ export function App() {
                     {sensors.air_temp_c > 0 ? "+" : ""}
                     {sensors.air_temp_c.toFixed(1)}°
                   </span>
-                  <span className="text-xs text-white/60">
+                  <span className="text-xs text-white/75">
                     {lang === "ru" ? "влажн." : "нымд."} {sensors.humidity_pct.toFixed(0)}%
                   </span>
                 </div>
-                <div className="mt-1 text-xs text-white/70">
+                <div className="mt-1 text-xs text-white/85">
                   {lang === "ru" ? "Воздух в теплице" : "Күнөскана абасы"}
                 </div>
               </div>
@@ -254,12 +262,12 @@ export function App() {
                     {sensors.leaf_temp_c > 0 ? "+" : ""}
                     {sensors.leaf_temp_c.toFixed(1)}°
                   </span>
-                  <span className="text-xs text-white/60">
+                  <span className="text-xs text-white/75">
                     {prediction.leaf_air_delta_c >= 0 ? "+" : ""}
                     {prediction.leaf_air_delta_c.toFixed(1)}°
                   </span>
                 </div>
-                <div className="mt-1 text-xs text-white/70">
+                <div className="mt-1 text-xs text-white/85">
                   {lang === "ru" ? "Температура листа" : "Жалбырак температурасы"}
                 </div>
               </div>
@@ -271,12 +279,12 @@ export function App() {
                     {prediction.dew_point_c > 0 ? "+" : ""}
                     {prediction.dew_point_c.toFixed(1)}°
                   </span>
-                  <span className="text-xs text-white/60">
+                  <span className="text-xs text-white/75">
                     {sensors.cooling_rate_c_h >= 0 ? "+" : ""}
-                    {sensors.cooling_rate_c_h.toFixed(1)}°/ч
+                    {sensors.cooling_rate_c_h.toFixed(1)}°/{lang === "ru" ? "ч" : "с"}
                   </span>
                 </div>
-                <div className="mt-1 text-xs text-white/70">
+                <div className="mt-1 text-xs text-white/85">
                   {lang === "ru" ? "Точка росы" : "Шүүдүрүм чекити"}
                 </div>
               </div>
@@ -295,13 +303,13 @@ export function App() {
                   >
                     {prediction.frost_risk_pct}%
                   </span>
-                  <span className="text-xs text-white/60">
+                  <span className="text-xs text-white/75">
                     {lang === "ru" ? "мин." : "мин."}{" "}
                     {prediction.min_predicted_leaf_c > 0 ? "+" : ""}
                     {prediction.min_predicted_leaf_c.toFixed(1)}°C
                   </span>
                 </div>
-                <div className="mt-1 text-xs text-white/70">
+                <div className="mt-1 text-xs text-white/85">
                   {lang === "ru" ? "Риск заморозка за 6ч" : "6 саатта үшүк коркунучу"}
                 </div>
               </div>
@@ -325,46 +333,53 @@ export function App() {
         {/* RIGHT COLUMN (3 cols): Liquid Glass Control & Diagnostics Panel */}
         <aside className="liquid-glass flex flex-col rounded-[22px] p-4 lg:col-span-3">
           {/* Glass Segmented Tabs */}
-          <nav
+          <div
+            role="tablist"
             aria-label={lang === "ru" ? "Разделы управления" : "Башкаруу бөлүмдөрү"}
-            className="grid grid-cols-3 gap-1 rounded-2xl border border-white/15 bg-black/20 p-1"
+            className="grid grid-cols-3 gap-1 rounded-2xl border border-white/15 bg-black/25 p-1"
           >
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === "climate"}
               onClick={() => setActiveTab("climate")}
-              className={`flex items-center justify-center gap-1 rounded-xl py-2 text-xs font-medium transition-all ${
+              className={`flex min-h-[38px] items-center justify-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors ${
                 activeTab === "climate"
                   ? "bg-white text-[#142014] shadow-sm"
-                  : "text-white/75 hover:text-white"
+                  : "text-white/80 hover:text-white"
               }`}
             >
-              <Sliders className="h-3.5 w-3.5" />
+              <Sliders className="h-3.5 w-3.5" aria-hidden="true" />
               {lang === "ru" ? "Климат" : "Климат"}
             </button>
 
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === "cv"}
               onClick={() => setActiveTab("cv")}
-              className={`flex items-center justify-center gap-1 rounded-xl py-2 text-xs font-medium transition-all ${
+              className={`flex min-h-[38px] items-center justify-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors ${
                 activeTab === "cv"
                   ? "bg-white text-[#142014] shadow-sm"
-                  : "text-white/75 hover:text-white"
+                  : "text-white/80 hover:text-white"
               }`}
             >
-              <ScanSearch className="h-3.5 w-3.5" />
+              <ScanSearch className="h-3.5 w-3.5" aria-hidden="true" />
               {lang === "ru" ? "Болезни" : "Оорулар"}
             </button>
 
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === "telegram"}
               onClick={() => setActiveTab("telegram")}
-              className={`flex items-center justify-center gap-1 rounded-xl py-2 text-xs font-medium transition-all ${
+              className={`flex min-h-[38px] items-center justify-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors ${
                 activeTab === "telegram"
                   ? "bg-white text-[#142014] shadow-sm"
-                  : "text-white/75 hover:text-white"
+                  : "text-white/80 hover:text-white"
               }`}
             >
-              <MessageCircle className="h-3.5 w-3.5" />
+              <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" />
               Bot
               {snapshot.telegram_messages.length > 0 && (
                 <span
@@ -373,46 +388,48 @@ export function App() {
                       ? "bg-[#FF6B6B] text-[#142014]"
                       : activeTab === "telegram"
                       ? "bg-[#142014]/15 text-[#142014]"
-                      : "bg-white/20 text-white"
+                      : "bg-white/25 text-white"
                   }`}
                 >
                   {snapshot.telegram_messages.length}
                 </span>
               )}
             </button>
-          </nav>
+          </div>
 
           {/* Tab Body */}
-          <div className="mt-4 flex-1">
+          <div role="tabpanel" className="mt-4 flex-1">
             {activeTab === "climate" && (
               <div className="flex flex-col gap-4">
                 {/* Auto Protection Status */}
                 <div
+                  aria-live="polite"
                   className={`rounded-2xl border p-3.5 ${
                     prediction.frost_level === "critical"
-                      ? "border-[#FF6B6B]/50 bg-[#FF6B6B]/18"
+                      ? "border-[#FF6B6B]/55 bg-[#FF6B6B]/20"
                       : prediction.frost_level === "warning"
-                      ? "border-[#FBBF24]/45 bg-[#FBBF24]/15"
+                      ? "border-[#FBBF24]/50 bg-[#FBBF24]/18"
                       : "border-white/20 bg-white/8"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 text-xs font-medium text-white">
                       {prediction.frost_level === "critical" ? (
-                        <ShieldAlert className="h-4 w-4 text-[#FF6B6B]" />
+                        <ShieldAlert className="h-4 w-4 text-[#FF6B6B]" aria-hidden="true" />
                       ) : (
-                        <ShieldCheck className="h-4 w-4 text-[#B5F043]" />
+                        <ShieldCheck className="h-4 w-4 text-[#B5F043]" aria-hidden="true" />
                       )}
                       <span>{lang === "ru" ? "Автозащита" : "Автокоргоо"}</span>
                     </div>
 
                     <button
                       type="button"
+                      aria-pressed={actuators.auto_mode}
                       onClick={handleAutoModeToggle}
-                      className={`rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold transition-all ${
+                      className={`min-h-[28px] rounded-full px-3 py-0.5 text-[11px] font-semibold transition-colors ${
                         actuators.auto_mode
                           ? "bg-[#B5F043] text-[#142014]"
-                          : "border border-white/25 bg-white/10 text-white"
+                          : "border border-white/30 bg-white/10 text-white"
                       }`}
                     >
                       {actuators.auto_mode
@@ -425,13 +442,13 @@ export function App() {
                     </button>
                   </div>
 
-                  <p className="mt-2 text-xs leading-relaxed text-white/90">
+                  <p className="mt-2 text-xs leading-relaxed text-white/95">
                     {lang === "ru"
                       ? actuators.last_trigger_reason
                       : actuators.last_trigger_reason_kg}
                   </p>
 
-                  <div className="mt-2.5 flex items-center justify-between border-t border-white/12 pt-2 text-[11px] text-white/65">
+                  <div className="mt-2.5 flex items-center justify-between border-t border-white/15 pt-2 text-[11px] text-white/80">
                     <span>
                       {lang === "ru" ? "Риск грибка:" : "Козу карын:"}{" "}
                       <strong className="text-white">{prediction.fungal_risk_pct}%</strong>
@@ -450,55 +467,76 @@ export function App() {
 
                 {/* Greenhouse Relay Switches */}
                 <div>
-                  <h2 className="mb-2 text-xs font-medium text-white/75">
+                  <h2 className="mb-2 text-xs font-medium text-white/85">
                     {lang === "ru" ? "Управление теплицей" : "Күнөскананы башкаруу"}
                   </h2>
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       type="button"
+                      aria-pressed={actuators.sprinkler_on}
                       onClick={() => handleActuatorToggle("sprinkler_on")}
-                      className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-xs font-medium transition-all ${
+                      className={`flex min-h-[76px] flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-xs font-medium transition-colors ${
                         actuators.sprinkler_on
-                          ? "border-[#7DD3FC]/70 bg-[#7DD3FC]/25 text-white"
-                          : "border-white/15 bg-white/6 text-white/75 hover:border-white/30 hover:text-white"
+                          ? "border-[#7DD3FC]/75 bg-[#7DD3FC]/25 text-white"
+                          : "border-white/18 bg-white/8 text-white/85 hover:border-white/35 hover:text-white"
                       }`}
                     >
-                      <Droplets className="h-4 w-4" />
+                      <Droplets className="h-4 w-4" aria-hidden="true" />
                       <span>{lang === "ru" ? "Полив" : "Сугаруу"}</span>
-                      <span className="font-mono-num text-[10px] opacity-80">
-                        {actuators.sprinkler_on ? "ВКЛ" : "ВЫКЛ"}
+                      <span className="font-mono-num text-[10px] opacity-90">
+                        {actuators.sprinkler_on
+                          ? lang === "ru"
+                            ? "ВКЛ"
+                            : "КҮЙҮК"
+                          : lang === "ru"
+                          ? "ВЫКЛ"
+                          : "ӨЧҮК"}
                       </span>
                     </button>
 
                     <button
                       type="button"
+                      aria-pressed={actuators.heater_on}
                       onClick={() => handleActuatorToggle("heater_on")}
-                      className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-xs font-medium transition-all ${
+                      className={`flex min-h-[76px] flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-xs font-medium transition-colors ${
                         actuators.heater_on
-                          ? "border-[#FBBF24]/70 bg-[#FBBF24]/25 text-white"
-                          : "border-white/15 bg-white/6 text-white/75 hover:border-white/30 hover:text-white"
+                          ? "border-[#FBBF24]/75 bg-[#FBBF24]/25 text-white"
+                          : "border-white/18 bg-white/8 text-white/85 hover:border-white/35 hover:text-white"
                       }`}
                     >
-                      <Flame className="h-4 w-4" />
+                      <Flame className="h-4 w-4" aria-hidden="true" />
                       <span>{lang === "ru" ? "Обогрев" : "Жылытуу"}</span>
-                      <span className="font-mono-num text-[10px] opacity-80">
-                        {actuators.heater_on ? "ВКЛ" : "ВЫКЛ"}
+                      <span className="font-mono-num text-[10px] opacity-90">
+                        {actuators.heater_on
+                          ? lang === "ru"
+                            ? "ВКЛ"
+                            : "КҮЙҮК"
+                          : lang === "ru"
+                          ? "ВЫКЛ"
+                          : "ӨЧҮК"}
                       </span>
                     </button>
 
                     <button
                       type="button"
+                      aria-pressed={actuators.vent_open}
                       onClick={() => handleActuatorToggle("vent_open")}
-                      className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-xs font-medium transition-all ${
+                      className={`flex min-h-[76px] flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-xs font-medium transition-colors ${
                         actuators.vent_open
-                          ? "border-[#B5F043]/70 bg-[#B5F043]/22 text-white"
-                          : "border-white/15 bg-white/6 text-white/75 hover:border-white/30 hover:text-white"
+                          ? "border-[#B5F043]/75 bg-[#B5F043]/22 text-white"
+                          : "border-white/18 bg-white/8 text-white/85 hover:border-white/35 hover:text-white"
                       }`}
                     >
-                      <Wind className="h-4 w-4" />
+                      <Wind className="h-4 w-4" aria-hidden="true" />
                       <span>{lang === "ru" ? "Окна" : "Терезе"}</span>
-                      <span className="font-mono-num text-[10px] opacity-80">
-                        {actuators.vent_open ? "ОТКР" : "ЗАКР"}
+                      <span className="font-mono-num text-[10px] opacity-90">
+                        {actuators.vent_open
+                          ? lang === "ru"
+                            ? "ОТКР"
+                            : "АЧЫК"
+                          : lang === "ru"
+                          ? "ЗАКР"
+                          : "ЖАБЫК"}
                       </span>
                     </button>
                   </div>

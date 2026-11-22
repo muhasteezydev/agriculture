@@ -13,12 +13,13 @@ from typing import Dict, Any, List
 
 
 def compute_dew_point(temp_c: float, rh_pct: float) -> float:
-    """Magnus-Tetens formula for dew point temperature (°C)."""
+    """Magnus-Tetens formula for dew point temperature (°C), clamped <= temp_c."""
     rh = max(1.0, min(100.0, rh_pct))
     a = 17.625
     b = 243.04
     gamma = math.log(rh / 100.0) + (a * temp_c) / (b + temp_c)
-    return round((b * gamma) / (a - gamma), 2)
+    dp = (b * gamma) / (a - gamma)
+    return round(min(temp_c, dp), 2)
 
 
 def sigmoid(x: float) -> float:
@@ -56,27 +57,34 @@ class FrostPredictor:
         # Clear-sky radiative acceleration factor when barometric pressure rises at night
         radiative_factor = max(0.0, pressure_trend_hpa_h) * 0.35 + max(0.0, -leaf_air_delta - 0.8) * 0.25
 
+        # Integrate temperature cumulatively hour-by-hour for a physically smooth trajectory
+        cur_air = air_temp_c
         for h in range(1, 7):
             future_hour = (sim_hour + h) % 24.0
-            # Diurnal cooling strongest between 20:00 and 06:00; warming after 07:00
-            is_night_cooling = future_hour >= 19.0 or future_hour <= 6.5
-            diurnal_drift = -0.55 - radiative_factor * 0.45 if is_night_cooling else +0.95
+            # Smooth diurnal drift: warming 07:00..15:00, gentle transition 15:00..19:00, cooling 19:00..06:30
+            if 7.0 <= future_hour <= 15.0:
+                diurnal_drift = +0.75 * math.sin(((future_hour - 7.0) / 8.0) * math.pi)
+            elif 15.0 < future_hour < 19.0:
+                diurnal_drift = -0.35 * ((future_hour - 15.0) / 4.0)
+            else:
+                diurnal_drift = -0.55 - radiative_factor * 0.45
 
             # Blend observed cooling rate (decays over horizon) with physical diurnal drift
-            decay = math.exp(-0.22 * h)
-            effective_rate = cooling_rate_c_h * decay + diurnal_drift * (1.0 - decay)
+            decay = math.exp(-0.28 * h)
+            step_rate = cooling_rate_c_h * decay + diurnal_drift * (1.0 - decay)
 
             # Dew-point latent heat slowdown: cooling slows slightly once air hits dew point
-            pred_air = air_temp_c + effective_rate * h
-            if pred_air < dew_point and humidity_pct > 75:
-                pred_air = dew_point + (pred_air - dew_point) * 0.72
+            next_air = cur_air + step_rate
+            if next_air < dew_point and humidity_pct > 75:
+                next_air = dew_point + (next_air - dew_point) * 0.72
+            cur_air = next_air
 
+            is_night_cooling = future_hour >= 19.0 or future_hour <= 6.5
             # Leaf surface drops extra 0.5-3.2°C below air on clear dry/high-pressure nights
             extra_leaf_drop = abs(min(0.0, leaf_air_delta)) * (1.05 if is_night_cooling else 0.4)
-            pred_leaf = pred_air - extra_leaf_drop
-
-            pred_air = round(pred_air, 2)
-            pred_leaf = round(pred_leaf, 2)
+            pred_air = round(cur_air, 2)
+            pred_leaf = round(cur_air - extra_leaf_drop, 2)
+            future_dew = round(min(pred_air, dew_point), 2)
 
             if pred_leaf < min_pred_leaf:
                 min_pred_leaf = pred_leaf
@@ -91,7 +99,7 @@ class FrostPredictor:
                 "hour": round(future_hour, 1),
                 "pred_air_c": pred_air,
                 "pred_leaf_c": pred_leaf,
-                "dew_point_c": dew_point,
+                "dew_point_c": future_dew,
             })
 
         # Frost probability calibrated via logistic score on physical features

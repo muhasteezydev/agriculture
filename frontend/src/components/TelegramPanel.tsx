@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Send, Bot, CheckCheck } from "lucide-react";
 import { Lang, TelegramMessage } from "../types";
 
@@ -15,6 +15,13 @@ export const TelegramPanel: React.FC<Props> = ({
   lang,
   onAction,
 }) => {
+  const feedRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (feedRef.current) {
+      feedRef.current.scrollTop = feedRef.current.scrollHeight;
+    }
+  }, [messages.length]);
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/15 bg-black/20">
       {/* Header */}
@@ -40,7 +47,7 @@ export const TelegramPanel: React.FC<Props> = ({
       </div>
 
       {/* Feed */}
-      <div className="flex max-h-[360px] flex-1 flex-col gap-2.5 overflow-y-auto p-3">
+      <div ref={feedRef} className="flex max-h-[360px] flex-1 flex-col gap-2.5 overflow-y-auto p-3">
         {messages.map((m) => {
           const isFarmer = m.sender === "farmer";
           const title = lang === "ru" ? m.title_ru : m.title_kg;

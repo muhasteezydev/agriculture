@@ -134,10 +134,10 @@ export const DiseaseScanner: React.FC<Props> = ({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={scanning}
-          className="liquid-pill flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-white transition-all disabled:opacity-50"
+          className="liquid-pill flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium text-white transition-all disabled:opacity-50"
         >
-          <Upload className="h-3.5 w-3.5" />
-          {lang === "ru" ? "Загрузить фото" : "Сүрөт жүктөө"}
+          <Upload className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          {lang === "ru" ? "Загрузить" : "Жүктөө"}
         </button>
         <input
           ref={fileInputRef}
@@ -204,8 +204,26 @@ export const DiseaseScanner: React.FC<Props> = ({
                 ) : (
                   <div className="h-10 w-full rounded-lg bg-white/10" />
                 )}
-                <span className="mt-1 line-clamp-1 w-full text-center text-[9.5px] text-white/85">
-                  {(lang === "ru" ? s.name_ru : s.name_kg).split(" ")[0]}
+                <span className="mt-1 line-clamp-1 w-full text-center text-[9.5px] text-white/90">
+                  {s.id === "healthy"
+                    ? lang === "ru"
+                      ? "Норма"
+                      : "Сак"
+                    : s.id === "late_blight"
+                    ? lang === "ru"
+                      ? "Фитофт."
+                      : "Фитофт."
+                    : s.id === "powdery_mildew"
+                    ? lang === "ru"
+                      ? "Роса"
+                      : "Шүүд."
+                    : s.id === "scab_rust"
+                    ? lang === "ru"
+                      ? "Парша"
+                      : "Парша"
+                    : lang === "ru"
+                    ? "Тля"
+                    : "Бит"}
                 </span>
               </button>
             );

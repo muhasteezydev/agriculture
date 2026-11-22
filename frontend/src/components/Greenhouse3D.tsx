@@ -137,27 +137,39 @@ export const Greenhouse3D: React.FC<Props> = ({
         </div>
 
         {actuators.failsafe_active && (
-          <div className="flex items-center gap-1.5 rounded-full border border-[#FF6B6B]/60 bg-[#B92B27]/85 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
-            <ShieldAlert className="h-3.5 w-3.5" />
+          <div
+            role="alert"
+            className="flex items-center gap-1.5 rounded-full border border-[#FF6B6B]/60 bg-[#B92B27]/90 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md"
+          >
+            <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
             <span>{lang === "ru" ? "Аварийная защита активна" : "Авариялык коргоо иштөөдө"}</span>
           </div>
         )}
       </div>
 
       {/* Bottom-Left Liquid Glass Camera Presets */}
-      <div className="absolute bottom-3.5 left-3.5 flex flex-wrap items-center gap-1.5">
+      <div
+        role="group"
+        aria-label={lang === "ru" ? "Ракурсы камеры 3D-теплицы" : "3D камера ракурстары"}
+        className="absolute bottom-3.5 left-3.5 flex flex-wrap items-center gap-1.5"
+      >
         {(Object.keys(CAMERA_PRESETS) as CameraPreset[]).map((key) => (
           <button
             key={key}
             type="button"
+            aria-pressed={preset === key}
             onClick={() => selectPreset(key)}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+            className={`flex min-h-[36px] items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
               preset === key
                 ? "bg-white text-[#142014] shadow-md"
-                : "liquid-pill text-white/90 hover:text-white"
+                : "liquid-pill text-white/95 hover:text-white"
             }`}
           >
-            {key === "node" ? <Cpu className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            {key === "node" ? (
+              <Cpu className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
             {lang === "ru" ? CAMERA_PRESETS[key].label_ru : CAMERA_PRESETS[key].label_kg}
           </button>
         ))}

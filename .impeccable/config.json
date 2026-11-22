@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-11-21T21:13:01.274Z",
         "reason": "user confirmed: Botanical Folio world uses #F5EFE2 warm cream plate ground"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "frontend/public/pitch.html"
+        ],
+        "createdAt": "2026-11-22T12:14:42.508Z",
+        "reason": "Pitch deck uses decorative ghost slide numbers (02-09) and dark photography backgrounds behind white frosted glass per user reference"
       }
     ]
   }

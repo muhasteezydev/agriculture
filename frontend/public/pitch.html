@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroGuard Edge — Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-stage: #17171A;
+      --white: #FAFAFA;
+      --ink: #1B1B1F;
+      --muted: #585763;
+      --plum: #3B384A;
+      --plum-deep: #292735;
+      --moss: #366118;
+      --moss-bright: #9EE240;
+      --ice: #B9D8F6;
+      --grid-light: rgba(27, 27, 31, 0.06);
+      --grid-dark: rgba(255, 255, 255, 0.07);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Onest", system-ui, -apple-system, sans-serif;
+      background: var(--bg-stage);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Top Presenter Controls (hidden on print) */
+    .toolbar {
+      position: fixed;
+      top: 14px;
+      right: 18px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(23, 23, 26, 0.78);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .toolbar button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 5px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      transition: background 140ms ease;
+    }
+
+    .toolbar button:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .toolbar button.primary {
+      background: var(--moss-bright);
+      color: #142014;
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .counter {
+      font-family: "JetBrains Mono", monospace;
+      padding: 0 6px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Deck container: Presentation mode vs Overview Grid mode */
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    body.grid-mode .deck {
+      height: auto;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 620px));
+      gap: 1.4cqw;
+      padding: 72px 24px 48px;
+      justify-content: center;
+    }
+
+    .slide {
+      position: relative;
+      width: min(1240px, 94vw);
+      aspect-ratio: 16 / 9;
+      container-type: inline-size;
+      background: var(--white);
+      overflow: hidden;
+      display: none;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    body.grid-mode .slide {
+      display: block;
+      width: 100%;
+      cursor: pointer;
+      transition: transform 180ms ease;
+    }
+
+    body.grid-mode .slide:first-child {
+      grid-column: 1 / -1;
+    }
+
+    body.grid-mode .slide:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Architectural subtle grid overlay matching GlowGarden reference */
+    .grid-bg-light {
+      background-color: var(--white);
+      background-image:
+        linear-gradient(to right, var(--grid-light) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-light) 1px, transparent 1px);
+      background-size: 25% 33.33%;
+    }
+
+    .grid-bg-dark {
+      background-color: var(--plum);
+      color: #fff;
+      background-image:
+        linear-gradient(to right, var(--grid-dark) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-dark) 1px, transparent 1px);
+      background-size: 25% 33.33%;
+    }
+
+    /* Ghost slide number */
+    .ghost-num {
+      position: absolute;
+      right: 2.2%;
+      bottom: -3.5%;
+      font-size: 11cqw;
+      font-weight: 800;
+      line-height: 0.85;
+      letter-spacing: -0.05em;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .ghost-num.on-light { color: rgba(27, 27, 31, 0.07); }
+    .ghost-num.on-dark { color: rgba(255, 255, 255, 0.08); }
+
+    /* Giant edge-to-edge display titles */
+    .mega-title {
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 0.88;
+      color: var(--ink);
+    }
+
+    /* Vertical 90deg left ribbon (Signature GlowGarden move) */
+    .vertical-rail {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 14.5%;
+      background: var(--plum);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .vertical-rail span {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 5.2cqw;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    /* Frosted glass card */
+    .glass-card {
+      background: rgba(16, 26, 18, 0.56);
+      backdrop-filter: blur(18px) saturate(135%);
+      -webkit-backdrop-filter: blur(18px) saturate(135%);
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      border-radius: 18px;
+      color: #fff;
+    }
+
+    .glass-card-light {
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 18px;
+      color: var(--ink);
+    }
+
+    .pill-plum {
+      display: inline-block;
+      background: var(--plum);
+      color: #fff;
+      padding: 0.45cqw 1.2cqw;
+      border-radius: 999px;
+      font-size: 1.15cqw;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    /* ==================== SLIDE 1: COVER ==================== */
+    .s1-top {
+      position: relative;
+      z-index: 3;
+      padding: 1.5% 3% 0;
+    }
+
+    .s1-title {
+      font-size: 12.6cqw;
+      font-weight: 800;
+      letter-spacing: -0.055em;
+      line-height: 0.84;
+      color: var(--ink);
+    }
+
+    .s1-sub {
+      margin-top: 1.8%;
+      max-width: 44%;
+      font-size: 1.85cqw;
+      line-height: 1.4;
+      font-weight: 400;
+      color: #2D2D33;
+    }
+
+    .s1-hill {
+      position: absolute;
+      left: -4%;
+      right: -4%;
+      bottom: -8%;
+      height: 58%;
+      background:
+        linear-gradient(180deg, rgba(250, 250, 250, 0.02) 0%, rgba(18, 34, 16, 0.38) 100%),
+        url("/bg-fields.jpg") center/cover no-repeat;
+      border-radius: 48% 52% 0 0 / 34% 26% 0 0;
+      z-index: 1;
+    }
+
+    .s1-shot-wrap {
+      position: absolute;
+      right: 3.5%;
+      bottom: 6%;
+      width: 49%;
+      z-index: 4;
+      border-radius: 20px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      box-shadow: 0 24px 60px rgba(10, 20, 12, 0.45);
+    }
+
+    .s1-shot-wrap img {
+      width: 100%;
+      display: block;
+      border-radius: 13px;
+    }
+
+    .s1-meta {
+      position: absolute;
+      left: 3.2%;
+      bottom: 5%;
+      z-index: 4;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .s1-chip {
+      background: rgba(255, 255, 255, 0.9);
+      color: #142014;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 1.05cqw;
+      font-weight: 600;
+    }
+
+    /* ==================== SLIDE 2: ПРОБЛЕМА ==================== */
+    .s2-body {
+      position: absolute;
+      left: 20%;
+      top: 12%;
+      right: 32%;
+      bottom: 10%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.7cqw;
+    }
+
+    .s2-body p {
+      font-size: 1.55cqw;
+      line-height: 1.45;
+      color: #2A2930;
+    }
+
+    .s2-body strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .s2-stat-col {
+      position: absolute;
+      right: 4%;
+      top: 10%;
+      width: 24%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1cqw;
+    }
+
+    .s2-stat {
+      background: #F1F4EC;
+      border: 1px solid rgba(91, 140, 42, 0.25);
+      border-radius: 18px;
+      padding: 1.5cqw;
+    }
+
+    .s2-stat .big {
+      font-size: 3.6cqw;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--moss);
+      line-height: 1;
+    }
+
+    .s2-stat .lbl {
+      margin-top: 6px;
+      font-size: 1.05cqw;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    /* ==================== SLIDE 3: ЦЕЛЕВАЯ АУДИТОРИЯ ==================== */
+    .s3-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(158, 226, 64, 0.16), transparent 55%),
+        linear-gradient(155deg, rgba(41, 39, 53, 0.88), rgba(22, 34, 24, 0.9)),
+        url("/bg-fields.jpg") center/cover no-repeat;
+    }
+
+    .s3-center {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6%;
+    }
+
+    .s3-card {
+      width: 68%;
+      padding: 4.5% 5.5%;
+      text-align: center;
+    }
+
+    .s3-card h2 {
+      font-size: 3.4cqw;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.6cqw;
+    }
+
+    .s3-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.95cqw;
+      font-size: 1.45cqw;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+    }
+
+    /* ==================== SLIDE 4: ЦЕЛИ ПРОЕКТА ==================== */
+    .s4-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, #FAFAFA 0%, #FAFAFA 24%, rgba(22, 38, 20, 0.25) 26%, rgba(16, 30, 16, 0.55) 100%),
+        url("/bg-fields.jpg") center bottom/cover no-repeat;
+    }
+
+    .s4-head {
+      position: relative;
+      z-index: 2;
+      padding: 1.6% 3.5% 0;
+      font-size: 7.2cqw;
+    }
+
+    .s4-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.4cqw;
+      padding: 3.5% 5% 4%;
+    }
+
+    .s4-card {
+      padding: 1.6cqw 1.9cqw;
+    }
+
+    .s4-card .num {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 2cqw;
+      font-weight: 500;
+      opacity: 0.72;
+      margin-bottom: 8px;
+    }
+
+    .s4-card h3 {
+      font-size: 1.5cqw;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .s4-card p {
+      font-size: 1.15cqw;
+      line-height: 1.4;
+      opacity: 0.88;
+    }
+
+    /* ==================== SLIDE 5: КАК ЭТО РАБОТАЕТ (ФОРМАТ) ==================== */
+    .s5-photo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 44%;
+      background:
+        linear-gradient(90deg, rgba(16, 28, 16, 0.25), rgba(16, 28, 16, 0.45)),
+        url("/demo-screen.png") center/cover no-repeat;
+    }
+
+    .s5-vtitle {
+      position: absolute;
+      left: 35.5%;
+      top: 50%;
+      transform: translateY(-50%) rotate(180deg);
+      writing-mode: vertical-rl;
+      font-size: 5.4cqw;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #fff;
+      text-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+      z-index: 4;
+    }
+
+    .s5-steps {
+      position: absolute;
+      left: 50%;
+      right: 5%;
+      top: 10%;
+      bottom: 10%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.8cqw;
+    }
+
+    .s5-step h3 {
+      font-size: 1.45cqw;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .s5-step p {
+      font-size: 1.15cqw;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+
+    /* ==================== SLIDE 6: ТЕХНОЛОГИИ И ЖЕЛЕЗО ==================== */
+    .s6-wrap {
+      padding: 3% 4.5%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .s6-title {
+      font-size: 7cqw;
+      margin-bottom: 3%;
+    }
+
+    .s6-cols {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2.5cqw;
+      flex: 1;
+      align-items: center;
+    }
+
+    .s6-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25cqw;
+      font-size: 1.35cqw;
+      line-height: 1.4;
+      color: #2A2930;
+    }
+
+    .s6-list div {
+      padding-left: 16px;
+      border-left: 3px solid var(--moss);
+    }
+
+    .s6-hal {
+      background: var(--plum);
+      color: #fff;
+      border-radius: 22px;
+      padding: 2.2cqw;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1cqw;
+    }
+
+    .s6-hal .tag {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      color: var(--moss-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .s6-hal h3 {
+      font-size: 2cqw;
+      font-weight: 700;
+    }
+
+    .s6-hal p {
+      font-size: 1.15cqw;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.45;
+    }
+
+    /* ==================== SLIDE 7: БЮДЖЕТ И ЭКОНОМИКА ==================== */
+    .s7-left-art {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 36%;
+      background:
+        linear-gradient(160deg, rgba(59, 56, 74, 0.35), rgba(20, 36, 18, 0.65)),
+        url("/bg-fields.jpg") center/cover no-repeat;
+    }
+
+    .s7-title {
+      position: absolute;
+      left: 2.6%;
+      bottom: 4%;
+      z-index: 4;
+      font-size: 6.0cqw;
+      color: #fff;
+      text-shadow: 0 6px 26px rgba(0, 0, 0, 0.45);
+    }
+
+    .s7-content {
+      position: absolute;
+      left: 42%;
+      right: 5%;
+      top: 12%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25cqw;
+    }
+
+    .s7-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(27, 27, 31, 0.12);
+      padding-bottom: 0.75cqw;
+      font-size: 1.45cqw;
+    }
+
+    .s7-row strong {
+      font-family: "JetBrains Mono", monospace;
+      color: var(--ink);
+    }
+
+    .s7-badge {
+      align-self: flex-end;
+      margin-top: 8px;
+      background: var(--plum);
+      color: #fff;
+      padding: 0.9cqw 1.8cqw;
+      border-radius: 999px;
+      font-size: 1.8cqw;
+      font-weight: 700;
+    }
+
+    .s7-note {
+      margin-top: 6px;
+      font-size: 1.25cqw;
+      color: var(--moss);
+      font-weight: 600;
+    }
+
+    /* ==================== SLIDE 8: СРОКИ (ROADMAP) ==================== */
+    .s8-strip {
+      position: absolute;
+      left: 14.5%;
+      top: 0;
+      bottom: 0;
+      width: 14%;
+      background:
+        linear-gradient(180deg, rgba(16, 30, 16, 0.2), rgba(16, 30, 16, 0.5)),
+        url("/bg-fields.jpg") center/cover no-repeat;
+    }
+
+    .s8-steps {
+      position: absolute;
+      left: 34%;
+      right: 6%;
+      top: 14%;
+      bottom: 14%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .s8-item {
+      max-width: 68%;
+    }
+
+    .s8-item:nth-child(2) { margin-left: 14%; }
+    .s8-item:nth-child(3) { margin-left: 28%; }
+
+    .s8-item .num {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 2cqw;
+      color: var(--moss-bright);
+      margin-bottom: 4px;
+    }
+
+    .s8-item h3 {
+      font-size: 1.65cqw;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .s8-item p {
+      font-size: 1.15cqw;
+      color: rgba(255, 255, 255, 0.78);
+      line-height: 1.4;
+    }
+
+    /* ==================== SLIDE 9: ОЖИДАЕМЫЕ РЕЗУЛЬТАТЫ ==================== */
+    .s9-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, #FAFAFA 0%, #FAFAFA 32%, rgba(18, 34, 16, 0.25) 36%, rgba(12, 24, 12, 0.78) 100%),
+        url("/bg-fields.jpg") center bottom/cover no-repeat;
+    }
+
+    .s9-title {
+      position: relative;
+      z-index: 2;
+      padding: 2% 3.5% 0;
+      font-size: 7.2cqw;
+      line-height: 0.9;
+    }
+
+    .s9-footer {
+      position: absolute;
+      left: 4%;
+      right: 4%;
+      bottom: 7%;
+      z-index: 2;
+      padding: 1.9cqw 2.3cqw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.8cqw;
+    }
+
+    .s9-points {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 1.35cqw;
+      line-height: 1.38;
+    }
+
+    .s9-cta {
+      shrink: 0;
+      background: var(--moss-bright);
+      color: #142014;
+      padding: 1.1cqw 1.9cqw;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 1.25cqw;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Print / Save to PDF: 1 clean 16:9 slide per page */
+    @media print {
+      @page { size: 1280px 720px; margin: 0; }
+      body { background: #fff; display: block; }
+      .toolbar { display: none !important; }
+      .deck { display: block !important; width: auto; height: auto; padding: 0 !important; }
+      .slide {
+        display: block !important;
+        width: 1280px !important;
+        height: 720px !important;
+        page-break-after: always;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Presenter Toolbar -->
+  <div class="toolbar">
+    <button type="button" id="prevBtn">←</button>
+    <span class="counter" id="counter">01 / 09</span>
+    <button type="button" id="nextBtn">→</button>
+    <button type="button" id="gridBtn" title="Сетка всех слайдов (G)">Сетка</button>
+    <button type="button" class="primary" onclick="window.print()">PDF</button>
+  </div>
+
+  <main class="deck" id="deck">
+    <!-- SLIDE 01: COVER -->
+    <section class="slide active grid-bg-light">
+      <div class="s1-top">
+        <div class="s1-title">AgroGuard</div>
+        <p class="s1-sub">
+          Автономный Edge-AI комплекс защиты теплиц и садов от весенних заморозков и болезней
+        </p>
+      </div>
+      <div class="s1-hill"></div>
+      <div class="s1-shot-wrap">
+        <img src="/demo-screen.png" alt="AgroGuard Edge 3D Digital Twin" />
+      </div>
+      <div class="s1-meta">
+        <span class="s1-chip">Physical AI Hackathon • Бишкек</span>
+        <span class="s1-chip">AgriTech & Food</span>
+        <span class="s1-chip">Edge AI • RU / KG</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 02: КОНЦЕПЦИЯ / ПРОБЛЕМА -->
+    <section class="slide grid-bg-light">
+      <div class="vertical-rail"><span>Проблема</span></div>
+      <div class="s2-body">
+        <p>
+          <strong>Весенние возвратные заморозки</strong> в Кыргызстане уничтожают сады и теплицы за одну ясную ночь:
+          температура поверхности листа падает на <strong>2–4°C ниже прогноза погоды</strong> по району.
+        </p>
+        <p>
+          <strong>Позднее выявление болезней:</strong> фитофтороз, мучнистую росу и вредителей замечают глазами,
+          когда поражено уже более 30% посадок.
+        </p>
+        <p>
+          <strong>Нет стабильного интернета и доступной автоматики:</strong> импортные системы климат-контроля стоят
+          тысячи долларов и не адаптированы под фермеров Центральной Азии.
+        </p>
+      </div>
+      <div class="s2-stat-col">
+        <div class="s2-stat">
+          <div class="big">20–35%</div>
+          <div class="lbl">ежегодные потери урожая из-за заморозков и болезней</div>
+        </div>
+        <div class="s2-stat">
+          <div class="big">−4°C</div>
+          <div class="lbl">на столько лист холоднее воздуха в ясную ночь</div>
+        </div>
+      </div>
+      <div class="ghost-num on-light">02</div>
+    </section>
+
+    <!-- SLIDE 03: ЦЕЛЕВАЯ АУДИТОРИЯ -->
+    <section class="slide">
+      <div class="s3-bg"></div>
+      <div class="s3-center">
+        <div class="glass-card s3-card">
+          <h2>Целевая аудитория</h2>
+          <div class="s3-list">
+            <div>Фермеры и владельцы плёночных/поликарбонатных теплиц Чуйской долины и Оша</div>
+            <div>Садоводы Иссык-Кульской области (абрикос, яблоня, черешня, ягоды)</div>
+            <div>Агрономы и сельскохозяйственные кооперативы Кыргызстана и Центральной Азии</div>
+          </div>
+        </div>
+      </div>
+      <div class="ghost-num on-dark">03</div>
+    </section>
+
+    <!-- SLIDE 04: ЦЕЛИ ПРОЕКТА -->
+    <section class="slide">
+      <div class="s4-bg"></div>
+      <div class="mega-title s4-head">Цели проекта</div>
+      <div class="s4-grid">
+        <div class="glass-card s4-card">
+          <div class="num">01</div>
+          <h3>Прогноз заморозков за 6 часов</h3>
+          <p>Локальная физико-ML модель (точка росы + ИК-датчик листа) предупреждает о заморозке заранее.</p>
+        </div>
+        <div class="glass-card-light s4-card">
+          <div class="num">02</div>
+          <h3>Автоматический запуск защиты</h3>
+          <p>При критическом риске реле сами включают микродождевание и ИК-обогрев без участия человека.</p>
+        </div>
+        <div class="glass-card-light s4-card">
+          <div class="num">03</div>
+          <h3>Офлайн диагностика болезней</h3>
+          <p>Локальный Edge-CV находит фитофтороз, мучнистую росу, паршу и вредителей за &lt;0.5 сек без интернета.</p>
+        </div>
+        <div class="glass-card s4-card">
+          <div class="num">04</div>
+          <h3>Простое управление в Telegram</h3>
+          <p>Фото-алерты и кнопки управления поливом/обогревом на русском и кыргызском языках.</p>
+        </div>
+      </div>
+      <div class="ghost-num on-dark">04</div>
+    </section>
+
+    <!-- SLIDE 05: КАК ЭТО РАБОТАЕТ (ФОРМАТ ДЕМО) -->
+    <section class="slide grid-bg-light">
+      <div class="s5-photo"></div>
+      <div class="s5-vtitle">Решение</div>
+      <div class="s5-steps">
+        <div class="s5-step">
+          <span class="pill-plum">За 6 часов до заморозка</span>
+          <h3>3D Цифровой двойник + Прогноз</h3>
+          <p>Система моделирует охлаждение листа и автоматически включает форсунки полива и ИК-обогрев до наступления 0°C.</p>
+        </div>
+        <div class="s5-step">
+          <span class="pill-plum">&lt; 0.5 сек • Офлайн</span>
+          <h3>Edge-CV сканер листьев</h3>
+          <p>Камера анализирует фото листа локально, отмечает поражённый сектор на 3D-схеме теплицы и выдаёт совет агронома.</p>
+        </div>
+        <div class="s5-step">
+          <span class="pill-plum">2-сторонний Telegram (RU / KG)</span>
+          <h3>Мгновенное управление с телефона</h3>
+          <p>Фермер получает фото проблемы и одной кнопкой включает или выключает защиту прямо из чата.</p>
+        </div>
+      </div>
+      <div class="ghost-num on-light">05</div>
+    </section>
+
+    <!-- SLIDE 06: ТЕХНОЛОГИИ И ЖЕЛЕЗО (РЕСУРСЫ) -->
+    <section class="slide grid-bg-light">
+      <div class="s6-wrap">
+        <div class="mega-title s6-title">Технологии</div>
+        <div class="s6-cols">
+          <div class="s6-list">
+            <div><strong>Edge-AI прогноз заморозков:</strong> уравнение точки росы Магнуса + градиент охлаждения + аппаратный Fail-Safe.</div>
+            <div><strong>Локальный Edge-CV:</strong> анализ листьев и жёлтых клеевых ловушек на устройстве без облачных API.</div>
+            <div><strong>3D Digital Twin:</strong> интерактивная теплица на React Three Fiber + Three.js с живой SSE-телеметрией.</div>
+            <div><strong>Open-Meteo API + Telegram Bot:</strong> реальная погода Бишкека и двустороннее управление на RU/KG.</div>
+          </div>
+          <div class="s6-hal">
+            <h3>Архитектура HAL: готово к переносу на железо</h3>
+            <p>
+              ИИ-ядро отделено от драйвера датчиков: сегодня работает <strong>VirtualTwinDriver</strong>, а завтра он
+              меняется на реальную плату <strong>RPi Zero 2W / ESP32-S3 + SHT41 + ИК-датчик MLX90614 + реле 12V</strong>
+              без переписывания логики.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="ghost-num on-light">06</div>
+    </section>
+
+    <!-- SLIDE 07: БЮДЖЕТ И ЭКОНОМИКА -->
+    <section class="slide grid-bg-light">
+      <div class="s7-left-art"></div>
+      <div class="mega-title s7-title">Бюджет</div>
+      <div class="s7-content">
+        <div class="s7-row">
+          <span>Контроллер (ESP32-S3 / RPi Zero 2W) + корпус IP65</span>
+          <strong>~$15</strong>
+        </div>
+        <div class="s7-row">
+          <span>Датчики (SHT41 воздух + MLX90614 ИК-лист)</span>
+          <strong>~$11</strong>
+        </div>
+        <div class="s7-row">
+          <span>Камера + блок реле 12V + солнечная панель</span>
+          <strong>~$9</strong>
+        </div>
+        <div class="s7-row">
+          <span>Бюджет MVP на хакатоне (100% Open-Source)</span>
+          <strong>$0</strong>
+        </div>
+        <div class="s7-badge">BOM ~$35 → Цена $99</div>
+        <div class="s7-note">Окупается за ОДНУ спасённую ночь весенних заморозков</div>
+      </div>
+      <div class="ghost-num on-light">07</div>
+    </section>
+
+    <!-- SLIDE 08: СРОКИ (ROADMAP) -->
+    <section class="slide grid-bg-dark">
+      <div class="vertical-rail" style="background: #292735;"><span>Сроки</span></div>
+      <div class="s8-strip"></div>
+      <div class="s8-steps">
+        <div class="s8-item">
+          <div class="num">01</div>
+          <h3>MVP и 3D Цифровой двойник — Готово</h3>
+          <p>Рабочий Edge-AI прогноз 6ч, офлайн CV-сканер болезней, 3D-теплица (R3F) и Telegram-бот на RU/KG.</p>
+        </div>
+        <div class="s8-item">
+          <div class="num">02</div>
+          <h3>Полевой прототип — 1–2 месяца</h3>
+          <p>Сборка физического узла на ESP32-S3 / RPi Zero 2W + MLX90614 и подключение драйвера через HAL.</p>
+        </div>
+        <div class="s8-item">
+          <div class="num">03</div>
+          <h3>Пилот в теплицах КР — Весна 2027</h3>
+          <p>Установка в 5 хозяйствах Чуйской долины и Иссык-Куля, калибровка моделей на реальных ночных заморозках.</p>
+        </div>
+      </div>
+      <div class="ghost-num on-dark">08</div>
+    </section>
+
+    <!-- SLIDE 09: ОЖИДАЕМЫЕ РЕЗУЛЬТАТЫ -->
+    <section class="slide">
+      <div class="s9-bg"></div>
+      <div class="mega-title s9-title">Ожидаемые<br />результаты</div>
+      <div class="glass-card s9-footer">
+        <div class="s9-points">
+          <div><strong>−20–35% потерь урожая</strong> за счёт раннего прогноза заморозков и болезней</div>
+          <div><strong>100% автономность:</strong> защита срабатывает даже при отсутствии интернета в селе</div>
+          <div><strong>Масштабируемость:</strong> единое решение за $99 для теплиц и садов всего Кыргызстана и ЦА</div>
+        </div>
+        <a href="/" class="s9-cta">Открыть живое 3D-демо →</a>
+      </div>
+      <div class="ghost-num on-dark">09</div>
+    </section>
+  </main>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    const gridBtn = document.getElementById("gridBtn");
+    let current = 0;
+
+    function show(idx) {
+      current = (idx + slides.length) % slides.length;
+      slides.forEach((s, i) => s.classList.toggle("active", i === current));
+      counter.textContent = `${String(current + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => show(current - 1));
+    document.getElementById("nextBtn").addEventListener("click", () => show(current + 1));
+
+    gridBtn.addEventListener("click", () => {
+      document.body.classList.toggle("grid-mode");
+      gridBtn.textContent = document.body.classList.contains("grid-mode") ? "Слайд" : "Сетка";
+    });
+
+    slides.forEach((s, i) => {
+      s.addEventListener("click", () => {
+        if (document.body.classList.contains("grid-mode")) {
+          document.body.classList.remove("grid-mode");
+          gridBtn.textContent = "Сетка";
+          show(i);
+        }
+      });
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") {
+        e.preventDefault();
+        show(current + 1);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        show(current - 1);
+      } else if (e.key.toLowerCase() === "g") {
+        gridBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
